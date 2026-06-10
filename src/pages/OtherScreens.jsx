@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import { exportParties, exportTransactions, exportInvoices, exportInventory, exportOutstandingReport } from '../utils/exportUtils'
 import { useApp } from '../context/AppContext'
-import { Package, AlertTriangle, Plus, TrendingUp, TrendingDown, ArrowLeft, BarChart2 } from 'lucide-react'
+import { Package, AlertTriangle, Plus, TrendingUp, TrendingDown, ArrowLeft, BarChart2, Edit2, Trash2 } from 'lucide-react'
 
 const fmtFull = n => `₹${Number(n).toLocaleString('en-IN')}`
 
 // ── Inventory Screen ──────────────────────────────────────────────────────────
 export function InventoryScreen() {
-  const { products, stockMovements, stockIn, stockOut, addProduct, language } = useApp()
+  const { products, stockMovements, stockIn, stockOut, addProduct, updateProduct, deleteProduct, language } = useApp()
   const hi = language === 'hi'
   const [showAddProduct, setShowAddProduct] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [filter, setFilter] = useState('all')
+  const [showEditModal, setShowEditModal] = useState(null)
   const [search, setSearch] = useState('')
 
   if (selectedProduct) return <ProductDetailScreen product={selectedProduct} onBack={() => setSelectedProduct(null)} />

@@ -13,6 +13,7 @@ import PurchaseOrderScreen from './pages/PurchaseOrderScreen'
 import RemindersScreen from './pages/RemindersScreen'
 import MoreScreen from './pages/MoreScreen'
 import BottomNav from './components/BottomNav'
+import AIAgent from './components/AIAgent'
 
 function AppShell() {
   const { currentUser } = useApp()
@@ -27,10 +28,7 @@ function AppShell() {
     setActiveTab(destination)
   }
 
-  const handleTabChange = (tab) => {
-    setPartyDetail(null)
-    setActiveTab(tab)
-  }
+  const handleTabChange = (tab) => { setPartyDetail(null); setActiveTab(tab) }
 
   const renderScreen = () => {
     if (partyDetail) return <PartyDetailScreen party={partyDetail} onBack={() => setPartyDetail(null)} />
@@ -50,17 +48,13 @@ function AppShell() {
     }
   }
 
-  const moreActive = ['reports','cashbook','purchase-orders','reminders','settings','staff','more'].includes(activeTab)
-
   return (
     <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: 'var(--bg)', position: 'relative' }}>
       <div style={{ paddingBottom: 72, minHeight: '100vh', overflowY: 'auto' }}>
         {renderScreen()}
       </div>
-      <BottomNav
-        activeTab={partyDetail ? 'parties' : activeTab}
-        onTabChange={handleTabChange}
-      />
+      <BottomNav activeTab={partyDetail ? 'parties' : activeTab} onTabChange={handleTabChange} />
+      <AIAgent />
     </div>
   )
 }

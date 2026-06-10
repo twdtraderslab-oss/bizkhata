@@ -9,7 +9,7 @@ const SEED_BUSINESS = {
   gstin: '24AAXPS1234F1Z5', language: 'en', plan: 'free', gstEnabled: true, gstRate: 5,
 }
 
-const SEED_PARTIES = [
+const SEED_PARTIES_DEMO = [
   { id: 'P001', name: 'Mehta Wholesale Pvt Ltd', phone: '9898001122', type: 'customer', city: 'Ahmedabad', balance: 45000, balanceType: 'to_receive', lastTxn: '2026-06-08', gstin: '24BBBPM5678G1Z3' },
   { id: 'P002', name: 'Patel & Sons Traders', phone: '9712233445', type: 'customer', city: 'Vadodara', balance: 32000, balanceType: 'to_receive', lastTxn: '2026-06-07', gstin: '24CCCPT9012H1Z1' },
   { id: 'P003', name: 'Raj Kumar & Co.', phone: '9988776655', type: 'customer', city: 'Surat', balance: 18500, balanceType: 'to_receive', lastTxn: '2026-06-09', gstin: '' },
@@ -19,7 +19,7 @@ const SEED_PARTIES = [
   { id: 'P007', name: 'Sathe Distributors', phone: '9345678901', type: 'both', city: 'Pune', balance: 8000, balanceType: 'to_receive', lastTxn: '2026-06-06', gstin: '27FFFSD2345K1Z2' },
 ]
 
-const SEED_TRANSACTIONS = [
+const SEED_TRANSACTIONS_DEMO = [
   { id: 'T001', partyId: 'P001', type: 'sale', amount: 45000, balanceAfter: 45000, note: 'Basmati Rice 50 bags', billNo: 'INV-2026-047', date: '2026-06-08', createdBy: 'Ramesh Sharma' },
   { id: 'T002', partyId: 'P002', type: 'sale', amount: 40000, balanceAfter: 40000, note: 'Mixed pulses order', billNo: 'INV-2026-046', date: '2026-06-07', createdBy: 'Ramesh Sharma' },
   { id: 'T003', partyId: 'P002', type: 'receipt', amount: 8000, balanceAfter: 32000, note: 'Partial payment NEFT', billNo: '', date: '2026-06-09', createdBy: 'Ramesh Sharma' },
@@ -29,7 +29,7 @@ const SEED_TRANSACTIONS = [
   { id: 'T007', partyId: 'P006', type: 'payment', amount: 8000, balanceAfter: 22000, note: 'Advance payment', billNo: '', date: '2026-06-06', createdBy: 'Ramesh Sharma' },
 ]
 
-const SEED_PRODUCTS = [
+const SEED_PRODUCTS_DEMO = [
   { id: 'PR001', name: 'Basmati Rice 25kg', category: 'Rice', unit: 'bag', purchasePrice: 1200, sellingPrice: 1450, stock: 142, lowStockAlert: 20 },
   { id: 'PR002', name: 'Toor Dal 50kg', category: 'Pulses', unit: 'bag', purchasePrice: 4800, sellingPrice: 5500, stock: 18, lowStockAlert: 20 },
   { id: 'PR003', name: 'Wheat Flour 50kg', category: 'Flour', unit: 'bag', purchasePrice: 1600, sellingPrice: 1850, stock: 67, lowStockAlert: 15 },
@@ -38,13 +38,13 @@ const SEED_PRODUCTS = [
   { id: 'PR006', name: 'Sona Masoori Rice 25kg', category: 'Rice', unit: 'bag', purchasePrice: 950, sellingPrice: 1150, stock: 95, lowStockAlert: 25 },
 ]
 
-const SEED_INVOICES = [
+const SEED_INVOICES_DEMO = [
   { id: 'INV001', partyId: 'P001', invoiceNo: 'INV-2026-047', date: '2026-06-08', dueDate: '2026-06-22', status: 'unpaid', subtotal: 43500, discount: 0, taxAmount: 1500, totalAmount: 45000, items: [{ productId: 'PR001', name: 'Basmati Rice 25kg', qty: 30, rate: 1450, amount: 43500 }] },
   { id: 'INV002', partyId: 'P002', invoiceNo: 'INV-2026-046', date: '2026-06-07', dueDate: '2026-06-21', status: 'partial', subtotal: 38500, discount: 0, taxAmount: 1500, totalAmount: 40000, items: [{ productId: 'PR002', name: 'Toor Dal 50kg', qty: 7, rate: 5500, amount: 38500 }] },
   { id: 'INV003', partyId: 'P003', invoiceNo: 'INV-2026-045', date: '2026-06-09', dueDate: '2026-06-23', status: 'unpaid', subtotal: 18500, discount: 0, taxAmount: 0, totalAmount: 18500, items: [{ productId: 'PR003', name: 'Wheat Flour 50kg', qty: 10, rate: 1850, amount: 18500 }] },
 ]
 
-const SEED_STOCK_MOVEMENTS = [
+const SEED_STOCK_MOVEMENTS_DEMO = [
   { id: 'SM001', productId: 'PR001', type: 'in', qty: 50, note: 'Purchase from National Agro', date: '2026-06-05', rate: 1200 },
   { id: 'SM002', productId: 'PR001', type: 'out', qty: 30, note: 'Sale INV-2026-047', date: '2026-06-08', rate: 1450 },
   { id: 'SM003', productId: 'PR002', type: 'in', qty: 25, note: 'Purchase from Krishna Rice', date: '2026-06-03', rate: 4800 },
@@ -155,6 +155,19 @@ export function AppProvider({ children }) {
   }
 
   const updateProduct = (id, updates) => setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))
+  const deleteProduct = (id) => setProducts(prev => prev.filter(p => p.id !== id))
+
+  // ── Edit/Delete helpers ──────────────────────────────────────────────────
+  const editParty = (id, updates) => setParties(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p))
+  const deleteParty = (id) => {
+    setParties(prev => prev.filter(p => p.id !== id))
+    setTransactions(prev => prev.filter(t => t.partyId !== id))
+    setInvoices(prev => prev.filter(i => i.partyId !== id))
+  }
+  const deleteTransaction = (id) => setTransactions(prev => prev.filter(t => t.id !== id))
+  const editInvoice = (id, updates) => setInvoices(prev => prev.map(i => i.id === id ? { ...i, ...updates } : i))
+  const deleteInvoice = (id) => setInvoices(prev => prev.filter(i => i.id !== id))
+  const deleteStockMovement = (id) => setStockMovements(prev => prev.filter(m => m.id !== id))
 
   // ── Invoice helpers ──────────────────────────────────────────────────────
   const nextInvoiceNo = () => {
@@ -214,11 +227,11 @@ export function AppProvider({ children }) {
     <AppContext.Provider value={{
       currentUser, login, logout,
       business, setBusiness,
-      parties, addParty,
-      transactions, addTransaction,
-      products, addProduct, updateProduct,
-      invoices, addInvoice, updateInvoiceStatus,
-      stockMovements, addStockMovement, stockIn, stockOut,
+      parties, addParty, editParty, deleteParty,
+      transactions, addTransaction, deleteTransaction,
+      products, addProduct, updateProduct, deleteProduct,
+      invoices, addInvoice, updateInvoiceStatus, editInvoice, deleteInvoice,
+      stockMovements, addStockMovement, stockIn, stockOut, deleteStockMovement,
       stats, language, setLanguage, t,
     }}>
       {children}
