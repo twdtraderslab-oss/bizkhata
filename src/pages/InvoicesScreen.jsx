@@ -363,7 +363,7 @@ function CreateInvoiceScreen({ onBack, onDone }) {
 
 // ── Invoice Detail Screen ─────────────────────────────────────────────────────
 function InvoiceDetailScreen({ invoice, onBack }) {
-  const { parties, business, updateInvoiceStatus, addTransaction, language, deleteInvoice } = useApp()
+  const { parties, business, updateInvoiceStatus, addTransaction, language, deleteInvoice, editInvoice } = useApp()
   const hi = language === 'hi'
   const party = parties.find(p => p.id === invoice.partyId)
 
@@ -408,9 +408,14 @@ function InvoiceDetailScreen({ invoice, onBack }) {
             </button>
           )}
           {invoice.status !== 'paid' && (
-            <button onClick={handleMarkPaid} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--green)', color: 'white', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              <CheckCircle size={15} /> {hi ? 'भुगतान मिला' : 'Mark Paid'}
-            </button>
+            <>
+              <button onClick={handleMarkPaid} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--green)', color: 'white', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <CheckCircle size={14} /> {hi ? 'पूरा मिला' : 'Mark Paid'}
+              </button>
+              <button onClick={() => { updateInvoiceStatus(invoice.id, 'partial'); onBack() }} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--amber)', color: 'white', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                ½ {hi ? 'आंशिक' : 'Partial'}
+              </button>
+            </>
           )}
           <button onClick={handlePrint} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)' }}>
             🖨️ {hi ? 'प्रिंट' : 'Print PDF'}

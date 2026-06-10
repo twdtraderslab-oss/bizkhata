@@ -1,31 +1,31 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Brand Colors — Saffron energy + Deep Indigo trust */
-  --saffron:       #FF6B1A;
-  --saffron-light: #FFF0E8;
-  --saffron-mid:   #FFD4B8;
-  --indigo:        #1A1F5E;
-  --indigo-mid:    #2D3491;
-  --indigo-light:  #E8EAFF;
+  /* Brand Colors — Premium Saffron Orange + Deep Navy Trust */
+  --saffron:       #F97316;
+  --saffron-light: #FFF7ED;
+  --saffron-mid:   #FED7AA;
+  --indigo:        #1E3A5F;
+  --indigo-mid:    #2563EB;
+  --indigo-light:  #EFF6FF;
 
   /* Status Colors */
-  --green:         #16A34A;
-  --green-light:   #DCFCE7;
+  --green:         #059669;
+  --green-light:   #D1FAE5;
   --red:           #DC2626;
-  --red-light:     #FEE2E2;
+  --red-light:     #FEF2F2;
   --amber:         #D97706;
-  --amber-light:   #FEF3C7;
+  --amber-light:   #FFFBEB;
 
-  /* Neutrals */
+  /* Neutrals — warm cream feel */
   --white:         #FFFFFF;
-  --bg:            #F7F8FC;
+  --bg:            #F8FAFC;
   --card:          #FFFFFF;
-  --border:        #E5E7EB;
-  --border-light:  #F3F4F6;
-  --text-primary:  #111827;
-  --text-secondary:#6B7280;
-  --text-muted:    #9CA3AF;
+  --border:        #E2E8F0;
+  --border-light:  #F1F5F9;
+  --text-primary:  #0F172A;
+  --text-secondary:#475569;
+  --text-muted:    #94A3B8;
 
   /* Typography */
   --font-display:  'Baloo 2', cursive;

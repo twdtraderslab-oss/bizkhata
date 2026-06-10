@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { TrendingUp, TrendingDown, Package, Users, AlertTriangle, ArrowUpRight, Bell, ChevronRight } from 'lucide-react'
+import NotificationsScreen from '../components/NotificationsScreen'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const fmt = (n) => n >= 100000 ? `₹${(n / 100000).toFixed(1)}L` : n >= 1000 ? `₹${(n / 1000).toFixed(0)}K` : `₹${n}`
@@ -18,8 +19,12 @@ const CHART_DATA = [
 ]
 
 export default function Dashboard({ onNavigate }) {
-  const { business, currentUser, parties, transactions, products, stats, language } = useApp()
+  const { business, currentUser, parties, transactions, products, stats, language, invoices } = useApp()
+  const [showNotifications, setShowNotifications] = useState(false)
   const hi = language === 'hi'
+
+  const today = new Date()
+  const notifCount = (invoices||[]).filter(i => i.status !== 'paid' && new Date(i.dueDate) < today).length + products.filter(p => p.stock <= p.lowStockAlert).length
 
   const overdueParties = parties
     .filter(p => p.balanceType === 'to_receive' && p.balance > 0)
@@ -56,12 +61,13 @@ export default function Dashboard({ onNavigate }) {
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, marginTop: 2 }}>{business?.name}</p>
           </div>
-          <button style={{
+          <button onClick={() => setShowNotifications(true)} style={{
             background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
             borderRadius: 12, padding: '10px 12px', cursor: 'pointer', color: 'white',
-            display: 'flex', alignItems: 'center', gap: 6, fontSize: 13,
+            display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, position: 'relative',
           }}>
-            <Bell size={16} /> <span style={{ background: 'var(--saffron)', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>3</span>
+            <Bell size={16} />
+            {notifCount > 0 && <span style={{ background: 'var(--red)', borderRadius: 99, padding: '1px 7px', fontSize: 11, fontWeight: 700 }}>{notifCount}</span>}
           </button>
         </div>
 
@@ -267,6 +273,7 @@ export default function Dashboard({ onNavigate }) {
         </div>
 
       </div>
+      {showNotifications && <NotificationsScreen onClose={() => setShowNotifications(false)} onNavigate={onNavigate} />}
     </div>
   )
 }
