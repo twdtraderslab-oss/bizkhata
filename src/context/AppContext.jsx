@@ -63,7 +63,7 @@ export function AppProvider({ children }) {
   const [language, setLanguage] = useState('en')
 
   useEffect(() => {
-    const saved = localStorage.getItem('hisaabpro_data_v2')
+    const saved = localStorage.getItem('bizkhata_data_v2')
     if (saved) {
       const data = JSON.parse(saved)
       setBusiness(data.business || SEED_BUSINESS)
@@ -80,14 +80,14 @@ export function AppProvider({ children }) {
       setInvoices(SEED_INVOICES)
       setStockMovements(SEED_STOCK_MOVEMENTS)
     }
-    const savedUser = localStorage.getItem('hisaabpro_user')
+    const savedUser = localStorage.getItem('bizkhata_user')
     if (savedUser) setCurrentUser(JSON.parse(savedUser))
   }, [])
 
   useEffect(() => {
     if (business) {
       const data = { business, parties, transactions, products, invoices, stockMovements }
-      localStorage.setItem('hisaabpro_data_v2', JSON.stringify(data))
+      localStorage.setItem('bizkhata_data_v2', JSON.stringify(data))
       // Sync to cloud if user is logged in
       if (currentUser?.id) {
         const timer = setTimeout(() => saveBusinessData(currentUser.id, data), 2000)
@@ -98,7 +98,7 @@ export function AppProvider({ children }) {
 
   const login = async (userData) => {
     setCurrentUser(userData)
-    localStorage.setItem('hisaabpro_user', JSON.stringify(userData))
+    localStorage.setItem('bizkhata_user', JSON.stringify(userData))
     // Load cloud data if exists
     if (userData.id) {
       try {
@@ -121,7 +121,7 @@ export function AppProvider({ children }) {
 
   const logout = async () => {
     setCurrentUser(null)
-    localStorage.removeItem('hisaabpro_user')
+    localStorage.removeItem('bizkhata_user')
     try { await supabase.auth.signOut() } catch(e) {}
   }
 
