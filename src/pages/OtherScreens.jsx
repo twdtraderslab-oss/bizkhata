@@ -13,6 +13,7 @@ export function InventoryScreen() {
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [filter, setFilter] = useState('all')
   const [showEditModal, setShowEditModal] = useState(null)
+  const [menuProductId, setMenuProductId] = useState(null)
   const [search, setSearch] = useState('')
 
   if (selectedProduct) return <ProductDetailScreen product={selectedProduct} onBack={() => setSelectedProduct(null)} />
@@ -80,23 +81,47 @@ export function InventoryScreen() {
             const isLow = p.stock <= p.lowStockAlert
             const margin = p.sellingPrice > 0 ? Math.round(((p.sellingPrice - p.purchasePrice) / p.sellingPrice) * 100) : 0
             return (
-              <div key={p.id} className="card" onClick={() => setSelectedProduct(p)}
-                style={{ padding: '14px 16px', cursor: 'pointer', border: isLow ? '1px solid #FCA5A5' : '1px solid var(--border)' }}
+              <div key={p.id} className="card"
+                style={{ padding: '14px 16px', border: isLow ? '1px solid #FCA5A5' : '1px solid var(--border)', position: 'relative' }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ flex: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => setSelectedProduct(p)}>
                     <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{p.name}</div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                       <span style={{ fontSize: 11, background: 'var(--indigo-light)', color: 'var(--indigo)', padding: '2px 8px', borderRadius: 99, fontWeight: 600 }}>{p.category}</span>
-                      <span style={{ fontSize: 11, background: 'var(--green-light)', color: 'var(--green)', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>Margin: {margin}%</span>
+                      {p.sellingPrice > 0 && <span style={{ fontSize: 11, background: 'var(--green-light)', color: 'var(--green)', padding: '2px 8px', borderRadius: 99, fontWeight: 700 }}>Margin: {margin}%</span>}
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20, color: isLow ? 'var(--red)' : 'var(--indigo)' }}>{p.stock}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{p.unit}s</div>
-                    {isLow && <span style={{ fontSize: 10, background: 'var(--red-light)', color: 'var(--red)', padding: '2px 6px', borderRadius: 99, fontWeight: 700 }}>LOW</span>}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ textAlign: 'right', cursor: 'pointer' }} onClick={() => setSelectedProduct(p)}>
+                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20, color: isLow ? 'var(--red)' : 'var(--indigo)' }}>{p.stock}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{p.unit}s</div>
+                      {isLow && <span style={{ fontSize: 10, background: 'var(--red-light)', color: 'var(--red)', padding: '2px 6px', borderRadius: 99, fontWeight: 700 }}>LOW</span>}
+                    </div>
+                    {/* 3-dot menu */}
+                    <div style={{ position: 'relative' }}>
+                      <button onClick={e => { e.stopPropagation(); setMenuProductId(menuProductId === p.id ? null : p.id) }}
+                        style={{ background: 'var(--bg)', border: 'none', borderRadius: 8, width: 30, height: 30, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, color: 'var(--text-muted)' }}>⋮</button>
+                      {menuProductId === p.id && (
+                        <div style={{ position: 'absolute', right: 0, top: 32, background: 'white', borderRadius: 12, boxShadow: 'var(--shadow-lg)', border: '1px solid var(--border)', zIndex: 50, minWidth: 130, overflow: 'hidden' }}
+                          onClick={e => e.stopPropagation()}>
+                          <button onClick={() => { setShowEditModal(p); setMenuProductId(null) }}
+                            style={{ width: '100%', padding: '11px 14px', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--indigo)', fontWeight: 600 }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--bg)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                            <Edit2 size={13} /> Edit Product
+                          </button>
+                          <button onClick={() => { if(window.confirm('Delete this product?')) { deleteProduct(p.id); setMenuProductId(null) } }}
+                            style={{ width: '100%', padding: '11px 14px', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--red)', fontWeight: 600 }}
+                            onMouseEnter={e => e.currentTarget.style.background = 'var(--red-light)'}
+                            onMouseLeave={e => e.currentTarget.style.background = 'none'}>
+                            <Trash2 size={13} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
@@ -124,6 +149,7 @@ export function InventoryScreen() {
       }}><Plus size={24} /></button>
 
       {showAddProduct && <AddProductModal onClose={() => setShowAddProduct(false)} />}
+      {showEditModal && <AddProductModal product={showEditModal} onClose={() => setShowEditModal(null)} />}
     </div>
   )
 }
@@ -261,16 +287,21 @@ function ProductDetailScreen({ product, onBack }) {
 }
 
 // ── Add Product Modal ─────────────────────────────────────────────────────────
-function AddProductModal({ onClose }) {
-  const { addProduct, language } = useApp()
+function AddProductModal({ product, onClose }) {
+  const { addProduct, updateProduct, language } = useApp()
   const hi = language === 'hi'
-  const [form, setForm] = useState({ name: '', category: '', unit: 'bag', purchasePrice: '', sellingPrice: '', stock: '', lowStockAlert: '10' })
+  const isEdit = !!product
+  const [form, setForm] = useState(product ? { ...product, purchasePrice: String(product.purchasePrice), sellingPrice: String(product.sellingPrice || ''), stock: String(product.stock), lowStockAlert: String(product.lowStockAlert) } : { name: '', category: '', unit: 'bag', purchasePrice: '', sellingPrice: '', stock: '', lowStockAlert: '10' })
   const [error, setError] = useState('')
 
   const handleSave = () => {
     if (!form.name.trim()) { setError('Product name required'); return }
-    if (!form.purchasePrice || !form.sellingPrice) { setError('Enter purchase and selling price'); return }
-    addProduct({ ...form, purchasePrice: Number(form.purchasePrice), sellingPrice: Number(form.sellingPrice), stock: Number(form.stock) || 0, lowStockAlert: Number(form.lowStockAlert) || 10 })
+    if (!form.purchasePrice) { setError('Purchase price required'); return }
+    if (isEdit) {
+      updateProduct(product.id, { ...form, purchasePrice: Number(form.purchasePrice), sellingPrice: Number(form.sellingPrice) || 0, stock: Number(form.stock) || 0, lowStockAlert: Number(form.lowStockAlert) || 10 })
+    } else {
+      addProduct({ ...form, purchasePrice: Number(form.purchasePrice), sellingPrice: Number(form.sellingPrice) || 0, stock: Number(form.stock) || 0, lowStockAlert: Number(form.lowStockAlert) || 10 })
+    }
     onClose()
   }
 
@@ -280,7 +311,7 @@ function AddProductModal({ onClose }) {
       <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--indigo)' }}>
-            {hi ? 'नया प्रोडक्ट जोड़ें' : 'Add New Product'}
+            {isEdit ? 'Edit Product' : (hi ? 'नया प्रोडक्ट जोड़ें' : 'Add New Product')}
           </h3>
           <button onClick={onClose} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
         </div>
@@ -303,7 +334,7 @@ function AddProductModal({ onClose }) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {[
               { key: 'purchasePrice', label: 'Purchase Price ₹', labelHi: 'खरीद भाव ₹' },
-              { key: 'sellingPrice', label: 'Selling Price ₹', labelHi: 'बेचने का भाव ₹' },
+              { key: 'sellingPrice', label: 'Selling Price ₹ (optional)', labelHi: 'बेचने का भाव ₹ (वैकल्पिक)' },
               { key: 'stock', label: 'Opening Stock', labelHi: 'शुरुआती स्टॉक' },
               { key: 'lowStockAlert', label: 'Low Stock Alert', labelHi: 'कम स्टॉक अलर्ट' },
             ].map(f => (
@@ -315,7 +346,7 @@ function AddProductModal({ onClose }) {
           </div>
           {error && <p style={{ color: 'var(--red)', fontSize: 13 }}>{error}</p>}
           <button className="btn-primary" style={{ width: '100%' }} onClick={handleSave}>
-            {hi ? 'प्रोडक्ट जोड़ें ✓' : 'Add Product ✓'}
+            {isEdit ? 'Save Changes ✓' : (hi ? 'प्रोडक्ट जोड़ें ✓' : 'Add Product ✓')}
           </button>
         </div>
       </div>

@@ -43,6 +43,12 @@ export default function MoreScreen({ onNavigate }) {
       screen: 'staff',
     },
     {
+      title: hi ? 'बैकअप & रिस्टोर' : 'Backup & Restore',
+      subtitle: hi ? 'डेटा सुरक्षित रखें, restore करें' : 'Keep data safe, restore anytime',
+      emoji: '💾', color: '#0369A1', bg: '#E0F2FE',
+      screen: 'backup',
+    },
+    {
       title: hi ? 'सेटिंग' : 'Settings',
       subtitle: hi ? 'बिज़नेस प्रोफाइल, भाषा' : 'Business profile, language',
       emoji: '⚙️', color: 'var(--text-secondary)', bg: 'var(--bg)',

@@ -12,6 +12,7 @@ import CashBookScreen from './pages/CashBookScreen'
 import PurchaseOrderScreen from './pages/PurchaseOrderScreen'
 import RemindersScreen from './pages/RemindersScreen'
 import MoreScreen from './pages/MoreScreen'
+import BackupScreen from './pages/BackupScreen'
 import BottomNav from './components/BottomNav'
 import AIAgent from './components/AIAgent'
 
@@ -44,6 +45,7 @@ function AppShell() {
       case 'settings':        return <SettingsScreen onNavigate={navigate} />
       case 'staff':           return <StaffScreen />
       case 'more':            return <MoreScreen onNavigate={navigate} />
+      case 'backup':          return <BackupScreen />
       default:                return <Dashboard onNavigate={navigate} />
     }
   }

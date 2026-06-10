@@ -113,7 +113,7 @@ function LoginSignupScreen() {
     if (!forgotEmail.includes('@')) { setError('Enter valid email'); return }
     setLoading(true); setError('')
     try {
-      await resetPassword(forgotEmail)
+      await resetPassword(forgotEmail, window.location.origin)
       setSuccess('Password reset link sent! Check your email.')
       setMode('login')
     } catch (err) { setError(err.message) }

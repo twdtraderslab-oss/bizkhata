@@ -118,7 +118,7 @@ export default function AIAgent() {
       {/* Floating Button */}
       {!isOpen && (
         <button onClick={() => setIsOpen(true)} style={{
-          position: 'fixed', bottom: 100, right: 20, width: 56, height: 56, borderRadius: '50%',
+          position: 'fixed', bottom: 100, left: 16, width: 52, height: 52, borderRadius: 16,
           background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', border: 'none', cursor: 'pointer',
           color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(124,58,237,0.5)', zIndex: 90,
@@ -131,7 +131,7 @@ export default function AIAgent() {
       {/* Chat Window */}
       {isOpen && (
         <div style={{
-          position: 'fixed', bottom: 88, right: 0, left: 0, maxWidth: 480, margin: '0 auto',
+          position: 'fixed', bottom: 72, right: 0, left: 0, maxWidth: 480, margin: '0 auto',
           height: '75vh', background: 'white', borderRadius: '20px 20px 0 0',
           boxShadow: '0 -8px 40px rgba(0,0,0,0.15)', zIndex: 150,
           display: 'flex', flexDirection: 'column', overflow: 'hidden',

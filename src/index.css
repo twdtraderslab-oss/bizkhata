@@ -151,3 +151,72 @@ html, body, #root {
   border-radius: var(--radius-sm);
 }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* ── Premium Glass Cards ─────────────────────────────────── */
+.card-premium {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 32px rgba(26,31,94,0.08), 0 2px 8px rgba(26,31,94,0.04);
+}
+
+/* ── Premium Gradient Text ───────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--saffron), var(--indigo));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Premium Stat Card ───────────────────────────────────── */
+.stat-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* ── Premium Button ──────────────────────────────────────── */
+.btn-premium {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(245,158,11,0.4);
+  transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+}
+.btn-premium:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(245,158,11,0.5); }
+
+/* ── Glow effects ────────────────────────────────────────── */
+.glow-green { box-shadow: 0 0 20px rgba(22,163,74,0.2); }
+.glow-red { box-shadow: 0 0 20px rgba(220,38,38,0.2); }
+.glow-saffron { box-shadow: 0 0 20px rgba(255,107,26,0.2); }
+
+/* ── Premium badge ───────────────────────────────────────── */
+.premium-badge {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Smooth transitions ──────────────────────────────────── */
+* { transition: background-color 0.15s ease, border-color 0.15s ease; }
+button, a { transition: all 0.2s ease !important; }
