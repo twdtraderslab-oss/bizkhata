@@ -5,7 +5,7 @@ const AppContext = createContext()
 const SEED_BUSINESS = {
   id: 'B001', name: 'Sharma Traders', ownerName: 'Ramesh Sharma',
   phone: '9876543210', address: 'Shop No. 14, Galla Mandi, Surat, Gujarat',
-  gstin: '24AAXPS1234F1Z5', language: 'en', plan: 'free',
+  gstin: '24AAXPS1234F1Z5', language: 'en', plan: 'free', gstEnabled: true, gstRate: 5,
 }
 
 const SEED_PARTIES = [

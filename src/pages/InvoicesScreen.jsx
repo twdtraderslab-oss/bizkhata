@@ -136,7 +136,9 @@ export default function InvoicesScreen({ onNavigate }) {
 
 // ── Create Invoice Screen ─────────────────────────────────────────────────────
 function CreateInvoiceScreen({ onBack, onDone }) {
-  const { parties, products, addInvoice, language } = useApp()
+  const { parties, products, addInvoice, language, business } = useApp()
+  const gstEnabled = business?.gstEnabled !== false
+  const gstRate = business?.gstRate ?? 5
   const hi = language === 'hi'
   const customers = parties.filter(p => p.type === 'customer' || p.type === 'both')
 
@@ -172,7 +174,7 @@ function CreateInvoiceScreen({ onBack, onDone }) {
 
   const subtotal = items.reduce((s, i) => s + (Number(i.amount) || 0), 0)
   const discountAmt = Number(discount) || 0
-  const taxAmount = Math.round((subtotal - discountAmt) * 0.05) // 5% GST example
+  const taxAmount = gstEnabled ? Math.round((subtotal - discountAmt) * (gstRate / 100)) : 0
   const total = subtotal - discountAmt + taxAmount
 
   const handleSave = () => {
@@ -321,7 +323,7 @@ function CreateInvoiceScreen({ onBack, onDone }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               { label: hi ? 'उप-कुल' : 'Subtotal', value: fmtFull(subtotal), bold: false },
-              { label: hi ? 'GST (5%)' : 'GST (5%)', value: fmtFull(taxAmount), bold: false },
+              ...(gstEnabled ? [{ label: `GST (${gstRate}%)`, value: fmtFull(taxAmount), bold: false }] : []),
             ].map((row, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14, color: 'var(--text-secondary)' }}>
                 <span>{row.label}</span><span style={{ fontWeight: row.bold ? 700 : 400 }}>{row.value}</span>

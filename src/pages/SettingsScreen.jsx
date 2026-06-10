@@ -132,27 +132,86 @@ function PlanModal({ onClose }) {
 function BusinessModal({ onClose }) {
   const { business, setBusiness, language } = useApp()
   const hi = language === 'hi'
-  const [form, setForm] = useState({ ...business })
+  const [form, setForm] = useState({ gstEnabled: true, gstRate: 5, ...business })
+
+  const GST_RATES = [0, 3, 5, 12, 18, 28]
+
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(4px)' }} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', maxHeight: '85vh', overflowY: 'auto' }}>
+      <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', maxHeight: '90vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--indigo)' }}>{hi ? 'बिज़नेस प्रोफाइल' : 'Business Profile'}</h3>
           <button onClick={onClose} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {[
-            { key: 'name', label: 'Business Name', placeholder: 'Sharma Traders' },
-            { key: 'ownerName', label: 'Owner Name', placeholder: 'Ramesh Sharma' },
-            { key: 'phone', label: 'Phone', placeholder: '9876543210' },
-            { key: 'address', label: 'Address', placeholder: 'Shop No., City, State' },
-            { key: 'gstin', label: 'GSTIN (optional)', placeholder: '24AAXXX1234F1Z5' },
+            { key: 'name', label: 'Business Name', labelHi: 'बिज़नेस का नाम', placeholder: 'Sharma Traders' },
+            { key: 'ownerName', label: 'Owner Name', labelHi: 'मालिक का नाम', placeholder: 'Ramesh Sharma' },
+            { key: 'phone', label: 'Phone', labelHi: 'फ़ोन', placeholder: '9876543210' },
+            { key: 'address', label: 'Address', labelHi: 'पता', placeholder: 'Shop No., City, State' },
           ].map(f => (
             <div key={f.key}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{f.label}</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{hi ? f.labelHi : f.label}</label>
               <input className="input-field" placeholder={f.placeholder} value={form[f.key] || ''} onChange={e => setForm(prev => ({ ...prev, [f.key]: e.target.value }))} />
             </div>
           ))}
+
+          {/* GST Toggle Section */}
+          <div className="card" style={{ padding: 16, border: form.gstEnabled ? '2px solid var(--green)' : '1.5px solid var(--border)', background: form.gstEnabled ? 'var(--green-light)' : 'var(--bg)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: form.gstEnabled ? 14 : 0 }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: form.gstEnabled ? 'var(--green)' : 'var(--text-primary)' }}>
+                  {form.gstEnabled ? '✅' : '⬜'} {hi ? 'GST चालू है' : 'GST Enabled'}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>
+                  {hi ? 'इनवॉइस पर GST जोड़ें' : 'Add GST to invoices automatically'}
+                </div>
+              </div>
+              {/* Toggle Switch */}
+              <div onClick={() => setForm(f => ({ ...f, gstEnabled: !f.gstEnabled }))}
+                style={{ width: 52, height: 28, borderRadius: 99, background: form.gstEnabled ? 'var(--green)' : 'var(--border)', cursor: 'pointer', position: 'relative', transition: 'background 0.3s', flexShrink: 0 }}>
+                <div style={{ position: 'absolute', top: 3, left: form.gstEnabled ? 27 : 3, width: 22, height: 22, borderRadius: '50%', background: 'white', transition: 'left 0.3s', boxShadow: '0 1px 4px rgba(0,0,0,0.2)' }} />
+              </div>
+            </div>
+
+            {form.gstEnabled && (
+              <>
+                <div style={{ marginBottom: 10 }}>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 8 }}>
+                    {hi ? 'GST दर' : 'GST Rate'}
+                  </label>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {GST_RATES.map(rate => (
+                      <button key={rate} onClick={() => setForm(f => ({ ...f, gstRate: rate }))} style={{
+                        padding: '8px 14px', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                        border: form.gstRate === rate ? 'none' : '1.5px solid var(--border)',
+                        background: form.gstRate === rate ? 'var(--green)' : 'white',
+                        color: form.gstRate === rate ? 'white' : 'var(--text-secondary)',
+                        transition: 'all 0.2s',
+                      }}>{rate}%</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>
+                    GSTIN {hi ? '(वैकल्पिक)' : '(optional)'}
+                  </label>
+                  <input className="input-field" style={{ background: 'white' }} placeholder="24AAXXX1234F1Z5"
+                    value={form.gstin || ''} onChange={e => setForm(prev => ({ ...prev, gstin: e.target.value }))} />
+                </div>
+                <div style={{ marginTop: 10, background: 'white', borderRadius: 10, padding: '10px 12px', fontSize: 12, color: 'var(--green)' }}>
+                  ✅ {hi ? `इनवॉइस पर ${form.gstRate}% GST automatically जुड़ेगा` : `${form.gstRate}% GST will be added automatically to all invoices`}
+                </div>
+              </>
+            )}
+
+            {!form.gstEnabled && (
+              <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
+                ℹ️ {hi ? 'इनवॉइस पर कोई GST नहीं जोड़ा जाएगा' : 'No GST will be added to invoices — simple billing mode'}
+              </div>
+            )}
+          </div>
+
           <button className="btn-primary" style={{ width: '100%', marginTop: 4 }} onClick={() => { setBusiness(form); onClose() }}>
             {hi ? 'सेव करें ✓' : 'Save Changes ✓'}
           </button>
