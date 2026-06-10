@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { ArrowLeft, Plus, Trash2, Search, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Plus, Trash2, Search, FileText, CheckCircle, Clock, AlertCircle, Printer } from 'lucide-react'
+import { printInvoice } from '../utils/pdfGenerator'
 
 const fmtFull = n => `₹${Number(n).toLocaleString('en-IN')}`
 
@@ -377,6 +378,8 @@ function InvoiceDetailScreen({ invoice, onBack }) {
     window.open(`https://wa.me/91${party?.phone}?text=${msg}`, '_blank')
   }
 
+  const handlePrint = () => printInvoice(invoice, party, business)
+
   const statusColors = { unpaid: { c: 'var(--red)', bg: 'var(--red-light)' }, partial: { c: 'var(--amber)', bg: 'var(--amber-light)' }, paid: { c: 'var(--green)', bg: 'var(--green-light)' } }
   const sc = statusColors[invoice.status] || statusColors.unpaid
 
@@ -395,7 +398,7 @@ function InvoiceDetailScreen({ invoice, onBack }) {
         <div style={{ display: 'flex', gap: 10 }}>
           {invoice.status !== 'paid' && party?.phone && (
             <button onClick={handleWhatsApp} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: '#25D366', color: 'white', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              📱 {hi ? 'WhatsApp रिमाइंडर' : 'WhatsApp Reminder'}
+              📱 {hi ? 'WhatsApp' : 'WhatsApp'}
             </button>
           )}
           {invoice.status !== 'paid' && (
@@ -403,6 +406,9 @@ function InvoiceDetailScreen({ invoice, onBack }) {
               <CheckCircle size={15} /> {hi ? 'भुगतान मिला' : 'Mark Paid'}
             </button>
           )}
+          <button onClick={handlePrint} style={{ flex: 1, padding: '11px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, border: '1px solid rgba(255,255,255,0.3)' }}>
+            🖨️ {hi ? 'प्रिंट' : 'Print PDF'}
+          </button>
         </div>
       </div>
 

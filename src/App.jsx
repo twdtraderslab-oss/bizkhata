@@ -7,26 +7,30 @@ import PartyDetailScreen from './pages/PartyDetailScreen'
 import InvoicesScreen from './pages/InvoicesScreen'
 import { InventoryScreen, ReportsScreen } from './pages/OtherScreens'
 import SettingsScreen from './pages/SettingsScreen'
+import StaffScreen from './pages/StaffScreen'
 import BottomNav from './components/BottomNav'
 
 function AppShell() {
   const { currentUser } = useApp()
   const [activeTab, setActiveTab] = useState('dashboard')
   const [partyDetail, setPartyDetail] = useState(null)
+  const [subScreen, setSubScreen] = useState(null) // 'staff' | null
 
   if (!currentUser) return <AuthScreen />
 
   const navigate = (destination, data) => {
     if (destination === 'party-detail') { setPartyDetail(data); return }
-    if (destination === 'parties') { setActiveTab('parties'); setPartyDetail(null); return }
-    if (destination === 'inventory') { setActiveTab('inventory'); return }
-    if (destination === 'invoices') { setActiveTab('invoices'); return }
-    setActiveTab(destination)
+    if (destination === 'parties') { setActiveTab('parties'); setPartyDetail(null); setSubScreen(null); return }
+    if (destination === 'inventory') { setActiveTab('inventory'); setSubScreen(null); return }
+    if (destination === 'invoices') { setActiveTab('invoices'); setSubScreen(null); return }
+    if (destination === 'staff') { setSubScreen('staff'); return }
+    setActiveTab(destination); setSubScreen(null)
   }
 
-  const handleTabChange = (tab) => { setActiveTab(tab); setPartyDetail(null) }
+  const handleTabChange = (tab) => { setActiveTab(tab); setPartyDetail(null); setSubScreen(null) }
 
   const renderScreen = () => {
+    if (subScreen === 'staff') return <StaffScreen onBack={() => setSubScreen(null)} />
     if (partyDetail) return <PartyDetailScreen party={partyDetail} onBack={() => setPartyDetail(null)} />
     switch (activeTab) {
       case 'dashboard': return <Dashboard onNavigate={navigate} />
@@ -34,7 +38,7 @@ function AppShell() {
       case 'invoices':  return <InvoicesScreen onNavigate={navigate} />
       case 'inventory': return <InventoryScreen />
       case 'reports':   return <ReportsScreen />
-      case 'settings':  return <SettingsScreen />
+      case 'settings':  return <SettingsScreen onNavigate={navigate} />
       default:          return <Dashboard onNavigate={navigate} />
     }
   }
@@ -44,7 +48,7 @@ function AppShell() {
       <div style={{ paddingBottom: 72, minHeight: '100vh', overflowY: 'auto' }}>
         {renderScreen()}
       </div>
-      <BottomNav activeTab={partyDetail ? 'parties' : activeTab} onTabChange={handleTabChange} />
+      <BottomNav activeTab={subScreen ? 'settings' : partyDetail ? 'parties' : activeTab} onTabChange={handleTabChange} />
     </div>
   )
 }

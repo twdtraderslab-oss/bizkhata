@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { exportParties, exportTransactions, exportInvoices, exportInventory, exportOutstandingReport } from '../utils/exportUtils'
 import { useApp } from '../context/AppContext'
 import { Package, AlertTriangle, Plus, TrendingUp, TrendingDown, ArrowLeft, BarChart2 } from 'lucide-react'
 
@@ -324,6 +325,8 @@ function AddProductModal({ onClose }) {
 // ── Reports Screen ────────────────────────────────────────────────────────────
 export function ReportsScreen() {
   const { stats, transactions, parties, products, invoices, language } = useApp()
+  // invoices may be undefined on first render
+  const safeInvoices = invoices || []
   const hi = language === 'hi'
 
   const totalSales = transactions.filter(t => t.type === 'sale').reduce((s, t) => s + t.amount, 0)
@@ -332,7 +335,7 @@ export function ReportsScreen() {
   const grossProfit = totalSales - totalPurchases
   const profitMargin = totalSales > 0 ? Math.round((grossProfit / totalSales) * 100) : 0
 
-  const topCustomers = parties
+  const topCustomers = (parties || [])
     .filter(p => p.type === 'customer' && p.balance > 0)
     .sort((a, b) => b.balance - a.balance).slice(0, 5)
 
@@ -413,6 +416,31 @@ export function ReportsScreen() {
           </div>
         )}
 
+        {/* Export Buttons */}
+        <div className="card" style={{ padding: 16 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, marginBottom: 14, color: 'var(--indigo)' }}>
+            📥 {hi ? 'डेटा एक्सपोर्ट करें' : 'Export Data (CSV/Excel)'}
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              { label: hi ? 'पार्टी लिस्ट' : 'Parties List', labelHi: 'पार्टी लिस्ट', emoji: '👥', action: () => exportParties(parties) },
+              { label: hi ? 'सभी लेन-देन' : 'All Transactions', emoji: '💰', action: () => exportTransactions(transactions, parties) },
+              { label: hi ? 'इनवॉइस रिपोर्ट' : 'Invoices Report', emoji: '🧾', action: () => exportInvoices(safeInvoices, parties) },
+              { label: hi ? 'इन्वेंटरी रिपोर्ट' : 'Inventory Report', emoji: '📦', action: () => exportInventory(products) },
+              { label: hi ? 'बकाया रिपोर्ट' : 'Outstanding Report', emoji: '⏳', action: () => exportOutstandingReport(parties, transactions) },
+            ].map((btn, i) => (
+              <button key={i} onClick={btn.action} className="btn-ghost" style={{ width: '100%', justifyContent: 'flex-start', fontSize: 14, padding: '12px 14px' }}>
+                <span style={{ fontSize: 18 }}>{btn.emoji}</span>
+                <span style={{ flex: 1, textAlign: 'left' }}>{btn.label}</span>
+                <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 700 }}>↓ CSV</span>
+              </button>
+            ))}
+          </div>
+          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10, textAlign: 'center' }}>
+            CSV files open in Excel, Google Sheets — free!
+          </p>
+        </div>
+
         {/* Premium upsell */}
         <div className="card" style={{ padding: 20, textAlign: 'center', background: 'linear-gradient(135deg, var(--saffron-light), var(--indigo-light))', border: 'none' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>👑</div>
@@ -428,3 +456,4 @@ export function ReportsScreen() {
     </div>
   )
 }
+// This file extended — exports added above
