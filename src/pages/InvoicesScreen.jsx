@@ -366,6 +366,7 @@ function InvoiceDetailScreen({ invoice, onBack }) {
   const { parties, business, updateInvoiceStatus, addTransaction, language, deleteInvoice, editInvoice } = useApp()
   const hi = language === 'hi'
   const party = parties.find(p => p.id === invoice.partyId)
+  const [showEditStatus, setShowEditStatus] = useState(false)
 
   const handleMarkPaid = () => {
     updateInvoiceStatus(invoice.id, 'paid')
@@ -396,6 +397,10 @@ function InvoiceDetailScreen({ invoice, onBack }) {
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'white' }}>{invoice.invoiceNo}</h2>
             <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{party?.name}</p>
           </div>
+          <button onClick={() => setShowEditStatus(true)}
+            style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', fontSize: 16 }}>
+            ✏️
+          </button>
           <button onClick={() => { if(window.confirm('Delete this invoice?')) { deleteInvoice(invoice.id); onBack() } }}
             style={{ background: 'rgba(220,38,38,0.3)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', fontSize: 16 }}>
             🗑️
