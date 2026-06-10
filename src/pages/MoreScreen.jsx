@@ -32,7 +32,7 @@ export default function MoreScreen({ onNavigate }) {
     },
     {
       title: hi ? 'रिपोर्ट' : 'Reports',
-      subtitle: hi ? 'P&L, बकाया, स्टॉक रिपोर्ट' : 'P&L, outstanding, export',
+      subtitle: hi ? 'GST, P&L, Monthly, Yearly PDF' : 'GST, P&L, Monthly, Yearly PDF',
       emoji: '📊', color: 'var(--saffron)', bg: 'var(--saffron-light)',
       screen: 'reports',
     },
@@ -110,7 +110,7 @@ export default function MoreScreen({ onNavigate }) {
 
         {/* Version */}
         <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', padding: '20px 0 0' }}>
-          BizKhata v4.0 · Made with ❤️ in India
+          HisaabPro v4.0 · Made with ❤️ in India
         </p>
       </div>
     </div>

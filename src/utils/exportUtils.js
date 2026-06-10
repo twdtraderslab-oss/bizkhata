@@ -37,7 +37,7 @@ export function exportParties(parties) {
     { key: 'lastTxn', label: 'Last Transaction' },
   ]
   const csv = toCSV(headers, parties)
-  downloadCSV(csv, `BizKhata-Parties-${new Date().toISOString().split('T')[0]}.csv`)
+  downloadCSV(csv, `HisaabPro-Parties-${new Date().toISOString().split('T')[0]}.csv`)
 }
 
 export function exportTransactions(transactions, parties) {
@@ -63,7 +63,7 @@ export function exportTransactions(transactions, parties) {
     { key: 'createdBy', label: 'Created By' },
   ]
   const csv = toCSV(headers, rows)
-  downloadCSV(csv, `BizKhata-Transactions-${new Date().toISOString().split('T')[0]}.csv`)
+  downloadCSV(csv, `HisaabPro-Transactions-${new Date().toISOString().split('T')[0]}.csv`)
 }
 
 export function exportInvoices(invoices, parties) {
@@ -91,7 +91,7 @@ export function exportInvoices(invoices, parties) {
     { key: 'status', label: 'Status' },
   ]
   const csv = toCSV(headers, rows)
-  downloadCSV(csv, `BizKhata-Invoices-${new Date().toISOString().split('T')[0]}.csv`)
+  downloadCSV(csv, `HisaabPro-Invoices-${new Date().toISOString().split('T')[0]}.csv`)
 }
 
 export function exportInventory(products) {
@@ -120,7 +120,7 @@ export function exportInventory(products) {
     { key: 'status', label: 'Status' },
   ]
   const csv = toCSV(headers, rows)
-  downloadCSV(csv, `BizKhata-Inventory-${new Date().toISOString().split('T')[0]}.csv`)
+  downloadCSV(csv, `HisaabPro-Inventory-${new Date().toISOString().split('T')[0]}.csv`)
 }
 
 export function exportOutstandingReport(parties, transactions) {
@@ -154,5 +154,5 @@ export function exportOutstandingReport(parties, transactions) {
     { key: 'daysSinceLastTxn', label: 'Days Since Last Txn' },
   ]
   const csv = toCSV(headers, outstanding)
-  downloadCSV(csv, `BizKhata-Outstanding-${new Date().toISOString().split('T')[0]}.csv`)
+  downloadCSV(csv, `HisaabPro-Outstanding-${new Date().toISOString().split('T')[0]}.csv`)
 }

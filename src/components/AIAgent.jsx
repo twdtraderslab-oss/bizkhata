@@ -13,7 +13,7 @@ async function getAIResponse(userMessage, businessContext) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: `You are BizKhata AI — a smart business assistant for Indian wholesale traders and MSME owners. You help with business queries, analysis, and advice.
+        system: `You are HisaabPro AI — a smart business assistant for Indian wholesale traders and MSME owners. You help with business queries, analysis, and advice.
 
 BUSINESS DATA:
 ${JSON.stringify(businessContext, null, 2)}
@@ -56,7 +56,7 @@ function generateLocalResponse(msg, ctx) {
       : `✅ All ${products.length} products are well-stocked! Total stock value: ${fmtFull(products.reduce((s,p)=>s+p.stock*p.purchasePrice,0))}`
   }
   if (lower.includes('hello') || lower.includes('hi') || lower.includes('namaste') || lower.includes('hii')) {
-    return `Namaste! 🙏 Main BizKhata AI hun — aapka business assistant!\n\nAap mujhse puch sakte hain:\n• Outstanding balance\n• Profit analysis\n• Stock status\n• Top customers\n• Business summary`
+    return `Namaste! 🙏 Main HisaabPro AI hun — aapka business assistant!\n\nAap mujhse puch sakte hain:\n• Outstanding balance\n• Profit analysis\n• Stock status\n• Top customers\n• Business summary`
   }
   if (lower.includes('summary') || lower.includes('report')) {
     return `📊 Business Summary:\n• To Receive: **${fmtFull(stats.totalReceivable)}**\n• To Pay: **${fmtFull(stats.totalPayable)}**\n• Low Stock: ${stats.lowStockCount} items\n• Total Customers: ${stats.totalCustomers}`
@@ -69,7 +69,7 @@ export default function AIAgent() {
   const { stats, parties, transactions, products, invoices, business, language } = useApp()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'assistant', text: `Namaste! 🙏 Main BizKhata AI hun!\n\nAapke business ke baare mein kuch bhi puchein — outstanding, profit, stock ya koi bhi sawaal!`, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }
+    { role: 'assistant', text: `Namaste! 🙏 Main HisaabPro AI hun!\n\nAapke business ke baare mein kuch bhi puchein — outstanding, profit, stock ya koi bhi sawaal!`, time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -142,7 +142,7 @@ export default function AIAgent() {
               <Sparkles size={20} color="white" />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'white', fontSize: 16 }}>BizKhata AI</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'white', fontSize: 16 }}>HisaabPro AI</div>
               <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ADE80' }} /> Online · Smart Business Assistant
               </div>

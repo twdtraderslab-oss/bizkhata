@@ -93,31 +93,31 @@ export default function PartiesScreen({ onNavigate }) {
                   {party.name[0]}
                 </div>
 
-                {/* Info */}
+                {/* Info + Balance in one flex column */}
                 <div style={{ flex: 1, minWidth: 0 }} onClick={() => onNavigate('party-detail', party)}>
-                  <div style={{ fontWeight: 600, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 3 }}>{party.name}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{party.city}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 99, background: party.type === 'supplier' ? 'var(--saffron-light)' : 'var(--green-light)', color: party.type === 'supplier' ? 'var(--saffron)' : 'var(--green)' }}>
-                      {party.type === 'both' ? 'Both' : party.type === 'supplier' ? 'Supplier' : 'Customer'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Balance */}
-                <div style={{ textAlign: 'right', flexShrink: 0 }} onClick={() => onNavigate('party-detail', party)}>
-                  {party.balance > 0 ? (
-                    <>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: party.balanceType === 'to_receive' ? 'var(--green)' : 'var(--red)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{party.name}</div>
+                    {party.balance > 0 ? (
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 800, color: party.balanceType === 'to_receive' ? 'var(--green)' : 'var(--red)', flexShrink: 0 }}>
                         {fmtFull(party.balance)}
                       </div>
-                      <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                        {party.balanceType === 'to_receive' ? 'to get' : 'to pay'}
-                      </div>
-                    </>
-                  ) : (
-                    <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 600, background: 'var(--green-light)', padding: '3px 8px', borderRadius: 99 }}>✓ Clear</span>
-                  )}
+                    ) : (
+                      <span style={{ fontSize: 11, color: 'var(--green)', fontWeight: 700, background: 'var(--green-light)', padding: '2px 8px', borderRadius: 99, flexShrink: 0 }}>✓ Clear</span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {party.city && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{party.city}</span>}
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99, flexShrink: 0, background: party.type === 'supplier' ? 'var(--saffron-light)' : party.type === 'both' ? 'var(--indigo-light)' : 'var(--green-light)', color: party.type === 'supplier' ? 'var(--saffron)' : party.type === 'both' ? 'var(--indigo)' : 'var(--green)' }}>
+                        {party.type === 'both' ? 'Both' : party.type === 'supplier' ? 'Supplier' : 'Customer'}
+                      </span>
+                    </div>
+                    {party.balance > 0 && (
+                      <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>
+                        {party.balanceType === 'to_receive' ? '↑ to receive' : '↓ to pay'}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* 3-dot Menu */}

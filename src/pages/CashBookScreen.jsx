@@ -24,19 +24,19 @@ export default function CashBookScreen() {
   const hi = language === 'hi'
 
   const [entries, setEntries] = useState(() => {
-    const saved = localStorage.getItem('bizkhata_cashbook')
+    const saved = localStorage.getItem('hisaabpro_cashbook')
     return saved ? JSON.parse(saved) : SEED_CASHBOOK
   })
   const [showAddModal, setShowAddModal] = useState(null) // 'in' | 'out' | null
   const [dateFilter, setDateFilter] = useState('all') // 'today' | 'week' | 'month' | 'all'
   const [openingBalance, setOpeningBalance] = useState(() => {
-    return Number(localStorage.getItem('bizkhata_opening_balance') || 25000)
+    return Number(localStorage.getItem('hisaabpro_opening_balance') || 25000)
   })
   const [showOpeningModal, setShowOpeningModal] = useState(false)
 
   const saveEntries = (newEntries) => {
     setEntries(newEntries)
-    localStorage.setItem('bizkhata_cashbook', JSON.stringify(newEntries))
+    localStorage.setItem('hisaabpro_cashbook', JSON.stringify(newEntries))
   }
 
   const addEntry = (entry) => {
@@ -196,7 +196,7 @@ export default function CashBookScreen() {
       {showOpeningModal && (
         <OpeningBalanceModal
           current={openingBalance}
-          onSave={val => { setOpeningBalance(val); localStorage.setItem('bizkhata_opening_balance', val); setShowOpeningModal(false) }}
+          onSave={val => { setOpeningBalance(val); localStorage.setItem('hisaabpro_opening_balance', val); setShowOpeningModal(false) }}
           onClose={() => setShowOpeningModal(false)}
         />
       )}

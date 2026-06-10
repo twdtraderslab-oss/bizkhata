@@ -8,14 +8,14 @@ export default function NotificationsScreen({ onClose, onNavigate }) {
   const { parties, invoices, products, transactions, language } = useApp()
   const hi = language === 'hi'
   const [dismissed, setDismissed] = useState(() => {
-    const saved = localStorage.getItem('bizkhata_dismissed_notifs')
+    const saved = localStorage.getItem('hisaabpro_dismissed_notifs')
     return saved ? JSON.parse(saved) : []
   })
 
   const dismiss = (id) => {
     const newDismissed = [...dismissed, id]
     setDismissed(newDismissed)
-    localStorage.setItem('bizkhata_dismissed_notifs', JSON.stringify(newDismissed))
+    localStorage.setItem('hisaabpro_dismissed_notifs', JSON.stringify(newDismissed))
   }
 
   const today = new Date()

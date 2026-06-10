@@ -6,7 +6,7 @@ export default function BackupScreen() {
   const { business, parties, transactions, products, invoices, stockMovements, language, currentUser } = useApp()
   const hi = language === 'hi'
   const [status, setStatus] = useState(null) // 'backing-up' | 'success' | 'restoring' | 'error'
-  const [lastBackup, setLastBackup] = useState(() => localStorage.getItem('bizkhata_last_backup') || null)
+  const [lastBackup, setLastBackup] = useState(() => localStorage.getItem('hisaabpro_last_backup') || null)
 
   const totalRecords = parties.length + transactions.length + products.length + (invoices?.length || 0)
 
@@ -29,13 +29,13 @@ export default function BackupScreen() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `BizKhata-Backup-${business?.name?.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
+      a.download = `HisaabPro-Backup-${business?.name?.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.json`
       a.click()
       URL.revokeObjectURL(url)
 
       const now = new Date().toLocaleString('en-IN')
       setLastBackup(now)
-      localStorage.setItem('bizkhata_last_backup', now)
+      localStorage.setItem('hisaabpro_last_backup', now)
       setTimeout(() => setStatus('success'), 500)
     } catch (e) {
       setStatus('error')
@@ -55,7 +55,7 @@ export default function BackupScreen() {
         if (!data.business || !data.parties) throw new Error('Invalid backup file')
 
         // Save to localStorage
-        localStorage.setItem('bizkhata_data_v2', JSON.stringify({
+        localStorage.setItem('hisaabpro_data_v2', JSON.stringify({
           business: data.business,
           parties: data.parties,
           transactions: data.transactions || [],

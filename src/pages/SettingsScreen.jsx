@@ -80,7 +80,7 @@ export default function SettingsScreen({ onNavigate }) {
         <button onClick={logout} className="btn-ghost" style={{ width: '100%', justifyContent: 'center', color: 'var(--red)', border: '1px solid var(--red-light)', background: 'var(--red-light)' }}>
           <LogOut size={16} /> {hi ? 'लॉगआउट' : 'Logout'}
         </button>
-        <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', paddingBottom: 8 }}>BizKhata v3.0 · Made with ❤️ in India</p>
+        <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', paddingBottom: 8 }}>HisaabPro v3.0 · Made with ❤️ in India</p>
       </div>
 
       {showPlanModal && <PlanModal onClose={() => setShowPlanModal(false)} />}

@@ -5,7 +5,8 @@ import Dashboard from './pages/Dashboard'
 import PartiesScreen from './pages/PartiesScreen'
 import PartyDetailScreen from './pages/PartyDetailScreen'
 import InvoicesScreen from './pages/InvoicesScreen'
-import { InventoryScreen, ReportsScreen } from './pages/OtherScreens'
+import { InventoryScreen } from './pages/OtherScreens'
+import GSTReportsScreen from './pages/GSTReportsScreen'
 import SettingsScreen from './pages/SettingsScreen'
 import StaffScreen from './pages/StaffScreen'
 import CashBookScreen from './pages/CashBookScreen'
@@ -38,7 +39,7 @@ function AppShell() {
       case 'parties':         return <PartiesScreen onNavigate={navigate} />
       case 'invoices':        return <InvoicesScreen onNavigate={navigate} />
       case 'inventory':       return <InventoryScreen />
-      case 'reports':         return <ReportsScreen />
+      case 'reports':         return <GSTReportsScreen />
       case 'cashbook':        return <CashBookScreen />
       case 'purchase-orders': return <PurchaseOrderScreen />
       case 'reminders':       return <RemindersScreen />

@@ -23,7 +23,7 @@ export default function PurchaseOrderScreen() {
   const hi = language === 'hi'
 
   const [orders, setOrders] = useState(() => {
-    const saved = localStorage.getItem('bizkhata_po')
+    const saved = localStorage.getItem('hisaabpro_po')
     return saved ? JSON.parse(saved) : SEED_POS
   })
   const [filter, setFilter] = useState('all')
@@ -32,7 +32,7 @@ export default function PurchaseOrderScreen() {
 
   const saveOrders = (newOrders) => {
     setOrders(newOrders)
-    localStorage.setItem('bizkhata_po', JSON.stringify(newOrders))
+    localStorage.setItem('hisaabpro_po', JSON.stringify(newOrders))
   }
 
   const updateStatus = (id, status) => {

@@ -37,7 +37,7 @@ export default function StaffScreen() {
   const { language, business } = useApp()
   const hi = language === 'hi'
   const [staff, setStaff] = useState(() => {
-    const saved = localStorage.getItem('bizkhata_staff')
+    const saved = localStorage.getItem('hisaabpro_staff')
     return saved ? JSON.parse(saved) : SEED_STAFF
   })
   const [showAddModal, setShowAddModal] = useState(false)
@@ -46,7 +46,7 @@ export default function StaffScreen() {
 
   const saveStaff = (newStaff) => {
     setStaff(newStaff)
-    localStorage.setItem('bizkhata_staff', JSON.stringify(newStaff))
+    localStorage.setItem('hisaabpro_staff', JSON.stringify(newStaff))
   }
 
   const removeStaff = (id) => {

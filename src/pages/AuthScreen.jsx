@@ -8,9 +8,9 @@ function SplashScreen({ onDone }) {
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(145deg, #1A1F5E 0%, #2D3491 50%, #FF6B1A 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
       <div style={{ animation: 'slideUp 0.6s ease forwards', textAlign: 'center' }}>
-        <div style={{ width: 90, height: 90, borderRadius: 24, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, margin: '0 auto 20px' }}>📒</div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>BizKhata</h1>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginTop: 6 }}>Smart Business Ledger</p>
+        <div style={{ width: 90, height: 90, borderRadius: 24, background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '2px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44, margin: '0 auto 20px' }}>🏦</div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 800, color: 'white', letterSpacing: '-0.5px' }}>HisaabPro</h1>
+        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 16, marginTop: 6 }}>Smart Vyapar Ledger</p>
       </div>
       <div style={{ position: 'absolute', bottom: 40, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Made with ❤️ in India</div>
     </div>
@@ -124,9 +124,9 @@ function LoginSignupScreen() {
     <div style={{ minHeight: '100vh', background: 'linear-gradient(180deg, var(--indigo) 0%, var(--indigo-mid) 35%, var(--bg) 35%)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '50px 24px 40px' }}>
       {/* Logo */}
       <div style={{ textAlign: 'center', marginBottom: 40, animation: 'slideUp 0.5s ease' }}>
-        <div style={{ fontSize: 38, marginBottom: 8 }}>📒</div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 800, color: 'white' }}>BizKhata</h1>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, marginTop: 4 }}>Smart Business Ledger</p>
+        <div style={{ fontSize: 38, marginBottom: 8 }}>🏦</div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 30, fontWeight: 800, color: 'white' }}>HisaabPro</h1>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, marginTop: 4 }}>Smart Vyapar Ledger</p>
       </div>
 
       {/* Card */}
@@ -227,7 +227,7 @@ function LoginSignupScreen() {
         )}
       </div>
 
-      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, marginTop: 24 }}>BizKhata · Free forever for small businesses</p>
+      <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, marginTop: 24 }}>HisaabPro · Free forever for small businesses</p>
     </div>
   )
 }
@@ -235,11 +235,11 @@ function LoginSignupScreen() {
 // ── Auth Shell ────────────────────────────────────────────────────────────────
 export default function AuthScreen() {
   const [authStep, setAuthStep] = useState('splash')
-  const hasSeenOnboarding = localStorage.getItem('bizkhata_onboarded')
+  const hasSeenOnboarding = localStorage.getItem('hisaabpro_onboarded')
 
   return authStep === 'splash'
     ? <SplashScreen onDone={() => setAuthStep(hasSeenOnboarding ? 'login' : 'onboarding')} />
     : authStep === 'onboarding'
-    ? <OnboardingScreen onDone={() => { localStorage.setItem('bizkhata_onboarded', '1'); setAuthStep('login') }} />
+    ? <OnboardingScreen onDone={() => { localStorage.setItem('hisaabpro_onboarded', '1'); setAuthStep('login') }} />
     : <LoginSignupScreen />
 }

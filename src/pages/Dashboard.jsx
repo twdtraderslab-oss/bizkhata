@@ -24,7 +24,7 @@ export default function Dashboard({ onNavigate }) {
   const hi = language === 'hi'
 
   const today = new Date()
-  const dismissed = JSON.parse(localStorage.getItem('bizkhata_dismissed_notifs') || '[]')
+  const dismissed = JSON.parse(localStorage.getItem('hisaabpro_dismissed_notifs') || '[]')
   const rawNotifCount = (invoices||[]).filter(i => i.status !== 'paid' && new Date(i.dueDate) < today).length + products.filter(p => p.stock <= p.lowStockAlert).length + parties.filter(p => p.balanceType === 'to_receive' && p.balance > 50000).length
   const notifCount = Math.max(0, rawNotifCount - dismissed.length)
 
