@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { supabase, saveBusinessData, loadBusinessData } from '../utils/supabase'
 
 const AppContext = createContext()
 
@@ -85,12 +86,44 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     if (business) {
-      localStorage.setItem('bizkhata_data_v2', JSON.stringify({ business, parties, transactions, products, invoices, stockMovements }))
+      const data = { business, parties, transactions, products, invoices, stockMovements }
+      localStorage.setItem('bizkhata_data_v2', JSON.stringify(data))
+      // Sync to cloud if user is logged in
+      if (currentUser?.id) {
+        const timer = setTimeout(() => saveBusinessData(currentUser.id, data), 2000)
+        return () => clearTimeout(timer)
+      }
     }
   }, [business, parties, transactions, products, invoices, stockMovements])
 
-  const login = (userData) => { setCurrentUser(userData); localStorage.setItem('bizkhata_user', JSON.stringify(userData)) }
-  const logout = () => { setCurrentUser(null); localStorage.removeItem('bizkhata_user') }
+  const login = async (userData) => {
+    setCurrentUser(userData)
+    localStorage.setItem('bizkhata_user', JSON.stringify(userData))
+    // Load cloud data if exists
+    if (userData.id) {
+      try {
+        const cloudData = await loadBusinessData(userData.id)
+        if (cloudData) {
+          setBusiness(cloudData.business || SEED_BUSINESS)
+          setParties(cloudData.parties || SEED_PARTIES)
+          setTransactions(cloudData.transactions || SEED_TRANSACTIONS)
+          setProducts(cloudData.products || SEED_PRODUCTS)
+          setInvoices(cloudData.invoices || SEED_INVOICES)
+          setStockMovements(cloudData.stockMovements || SEED_STOCK_MOVEMENTS)
+        } else {
+          // First time user — use seed data, save to cloud
+          const initData = { business: SEED_BUSINESS, parties: SEED_PARTIES, transactions: SEED_TRANSACTIONS, products: SEED_PRODUCTS, invoices: SEED_INVOICES, stockMovements: SEED_STOCK_MOVEMENTS }
+          await saveBusinessData(userData.id, initData)
+        }
+      } catch (e) { console.log('Cloud sync error:', e) }
+    }
+  }
+
+  const logout = async () => {
+    setCurrentUser(null)
+    localStorage.removeItem('bizkhata_user')
+    try { await supabase.auth.signOut() } catch(e) {}
+  }
 
   const addParty = (party) => {
     const newParty = { ...party, id: `P${Date.now()}`, lastTxn: new Date().toISOString().split('T')[0] }
