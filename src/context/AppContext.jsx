@@ -88,9 +88,11 @@ export function AppProvider({ children }) {
     if (business) {
       const data = { business, parties, transactions, products, invoices, stockMovements }
       localStorage.setItem('bizkhata_data_v2', JSON.stringify(data))
-      // Sync to cloud if user is logged in
+      // Sync to cloud if user is logged in - never crash on failure
       if (currentUser?.id) {
-        const timer = setTimeout(() => saveBusinessData(currentUser.id, data), 2000)
+        const timer = setTimeout(() => {
+          saveBusinessData(currentUser.id, data).catch(e => console.warn('Cloud sync skipped'))
+        }, 2000)
         return () => clearTimeout(timer)
       }
     }
