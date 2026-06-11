@@ -14,7 +14,7 @@ export default function SettingsScreen({ onNavigate }) {
       items: [
         { icon: <Building2 size={18} color="var(--indigo)" />, label: hi ? 'बिज़नेस प्रोफाइल' : 'Business Profile', sub: business?.name, action: () => setShowBusinessModal(true) },
         { icon: <Users size={18} color="var(--indigo)" />, label: hi ? 'स्टाफ प्रबंधन' : 'Staff Management', sub: hi ? 'स्टाफ जोड़ें, भूमिकाएं सेट करें' : 'Add staff, set roles & permissions', action: () => onNavigate('staff') },
-        { icon: <Crown size={18} color="var(--amber)" />, label: hi ? 'प्लान अपग्रेड करें' : 'Upgrade to Premium', sub: hi ? 'अभी फ्री प्लान पर हैं' : 'Currently on Free plan', action: () => setShowPlanModal(true), highlight: true },
+        { icon: <Crown size={18} color="var(--amber)" />, label: hi ? 'Recovery Center — ₹999/yr' : 'Unlock Recovery Center — ₹999/yr', sub: hi ? 'Free: Record keeping · Paid: Payment Recovery' : 'Free: All record keeping · Paid: AI Recovery + UPI', action: () => setShowPlanModal(true), highlight: true },
       ]
     },
     {
@@ -91,14 +91,21 @@ export default function SettingsScreen({ onNavigate }) {
 
 function PlanModal({ onClose }) {
   const features = [
-    { label: 'Parties', free: 'Up to 50', pro: 'Unlimited' },
-    { label: 'Transactions/month', free: '100', pro: 'Unlimited' },
-    { label: 'Staff accounts', free: '3', pro: 'Up to 10' },
-    { label: 'Products', free: 'Up to 30', pro: 'Unlimited' },
-    { label: 'Reports & PDF export', free: 'Basic', pro: 'All reports' },
-    { label: 'WhatsApp reminders', free: '10/month', pro: 'Unlimited' },
-    { label: 'Google Drive backup', free: '✗', pro: '✓' },
-    { label: 'Branded invoices', free: '✗', pro: '✓' },
+    { label: 'Parties & Customers', free: 'Unlimited ✓', pro: 'Unlimited ✓' },
+    { label: 'Transactions & Ledger', free: 'Unlimited ✓', pro: 'Unlimited ✓' },
+    { label: 'Invoicing & Billing', free: 'Unlimited ✓', pro: 'Unlimited ✓' },
+    { label: 'Inventory Management', free: 'Unlimited ✓', pro: 'Unlimited ✓' },
+    { label: '─── RECOVERY FEATURES ───', free: '─', pro: '─' },
+    { label: 'Payment Recovery Center', free: '✗', pro: '✓ Included' },
+    { label: 'AI Recovery Agent', free: '✗', pro: '✓ Included' },
+    { label: 'UPI Collect Links', free: '✗', pro: '✓ Included' },
+    { label: 'Auto Reminder (Day 0-30)', free: '✗', pro: '✓ Included' },
+    { label: 'Recovery Analytics', free: '✗', pro: '✓ Included' },
+    { label: '─── REPORTS ───', free: '─', pro: '─' },
+    { label: 'Basic Reports', free: '✓', pro: '✓' },
+    { label: 'PDF Reports', free: '✗', pro: '✓' },
+    { label: 'Excel Export', free: '✗', pro: '✓' },
+    { label: 'GST Reports', free: '✗', pro: '✓' },
   ]
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(4px)' }} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -109,9 +116,9 @@ function PlanModal({ onClose }) {
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 20 }}>Grow your business without limits</p>
         <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', borderRadius: 16, padding: 20, marginBottom: 20, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 800, color: 'white' }}>₹299</div>
-          <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14 }}>per month · cancel anytime</div>
-          <div style={{ color: '#4ADE80', fontSize: 13, fontWeight: 600, marginTop: 6 }}>🎉 First month FREE for early users</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 900, color: 'white' }}>₹999</div>
+          <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14 }}>per year · save ₹3,000 vs monthly</div>
+          <div style={{ color: '#4ADE80', fontSize: 13, fontWeight: 600, marginTop: 6 }}>🎉 Basic features FREE forever · Recovery = ₹999/yr</div>
         </div>
         <div className="card" style={{ overflow: 'hidden', marginBottom: 20 }}>
           {features.map((f, i) => (

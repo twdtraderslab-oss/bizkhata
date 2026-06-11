@@ -31,22 +31,41 @@ function AppShell() {
     setActiveTab(dest)
   }
 
+  // Screens accessed from More menu need back button
+  const moreScreens = ['cashbook','purchase-orders','reminders','auto-reminders','recovery','backup','staff','reports']
+  const goBack = () => setActiveTab('more')
+
+  const wrapWithBack = (screen, component) => {
+    if (!moreScreens.includes(screen)) return component
+    return (
+      <div>
+        <div style={{ background: 'var(--indigo)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={goBack} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', flexShrink: 0 }}>
+            ←
+          </button>
+          <span style={{ color: 'white', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15 }}>← Back to Menu</span>
+        </div>
+        {component}
+      </div>
+    )
+  }
+
   const renderScreen = () => {
     if (partyDetail) return <PartyDetailScreen party={partyDetail} onBack={() => setPartyDetail(null)} />
     switch (activeTab) {
       case 'dashboard':       return <Dashboard onNavigate={navigate} />
       case 'parties':         return <PartiesScreen onNavigate={navigate} />
       case 'invoices':        return <InvoicesScreen onNavigate={navigate} />
-      case 'inventory':       return <InventoryScreen />
-      case 'reports':         return <ReportsScreen />
-      case 'cashbook':        return <CashBookScreen />
-      case 'purchase-orders': return <PurchaseOrderScreen />
-      case 'reminders':       return <RemindersScreen />
-      case 'auto-reminders':  return <AutoReminderScreen />
-      case 'recovery':        return <RecoveryDashboard />
-      case 'backup':          return <BackupScreen />
+      case 'inventory':       return wrapWithBack('inventory', <InventoryScreen />)
+      case 'reports':         return wrapWithBack('reports', <ReportsScreen />)
+      case 'cashbook':        return wrapWithBack('cashbook', <CashBookScreen />)
+      case 'purchase-orders': return wrapWithBack('purchase-orders', <PurchaseOrderScreen />)
+      case 'reminders':       return wrapWithBack('reminders', <RemindersScreen />)
+      case 'auto-reminders':  return wrapWithBack('auto-reminders', <AutoReminderScreen />)
+      case 'recovery':        return wrapWithBack('recovery', <RecoveryDashboard />)
+      case 'backup':          return wrapWithBack('backup', <BackupScreen />)
       case 'settings':        return <SettingsScreen onNavigate={navigate} />
-      case 'staff':           return <StaffScreen />
+      case 'staff':           return wrapWithBack('staff', <StaffScreen />)
       case 'more':            return <MoreScreen onNavigate={navigate} />
       default:                return <Dashboard onNavigate={navigate} />
     }

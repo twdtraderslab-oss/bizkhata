@@ -670,29 +670,39 @@ export function ReportsScreen() {
           </div>
         )}
 
-        {/* Export Buttons */}
+        {/* Export Buttons - Excel + PDF */}
         <div className="card" style={{ padding: 16 }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, marginBottom: 14, color: 'var(--indigo)' }}>
-            📥 {hi ? 'डेटा एक्सपोर्ट करें' : 'Export Data (CSV/Excel)'}
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, marginBottom: 4, color: 'var(--indigo)' }}>
+            📥 {hi ? 'एक्सपोर्ट करें' : 'Export Reports'}
           </h3>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>Excel (CSV) + PDF — dono available</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
-              { label: hi ? 'पार्टी लिस्ट' : 'Parties List', labelHi: 'पार्टी लिस्ट', emoji: '👥', action: () => exportParties(parties) },
-              { label: hi ? 'सभी लेन-देन' : 'All Transactions', emoji: '💰', action: () => exportTransactions(transactions, parties) },
-              { label: hi ? 'इनवॉइस रिपोर्ट' : 'Invoices Report', emoji: '🧾', action: () => exportInvoices(safeInvoices, parties) },
-              { label: hi ? 'इन्वेंटरी रिपोर्ट' : 'Inventory Report', emoji: '📦', action: () => exportInventory(products) },
-              { label: hi ? 'बकाया रिपोर्ट' : 'Outstanding Report', emoji: '⏳', action: () => exportOutstandingReport(parties, transactions) },
+              { label: 'Parties List',       emoji: '👥', csvFn: () => exportParties(parties),                          pdfFn: null },
+              { label: 'All Transactions',   emoji: '💰', csvFn: () => exportTransactions(transactions, parties),       pdfFn: handlePrintPL },
+              { label: 'Invoices Report',    emoji: '🧾', csvFn: () => exportInvoices(safeInvoices, parties),           pdfFn: null },
+              { label: 'Inventory Report',   emoji: '📦', csvFn: () => exportInventory(products),                       pdfFn: null },
+              { label: 'Outstanding Report', emoji: '⏳', csvFn: () => exportOutstandingReport(parties, transactions),  pdfFn: null },
+              { label: 'P&L Report',         emoji: '📈', csvFn: () => exportTransactions(transactions, parties),       pdfFn: handlePrintPL },
+              { label: 'GST Report',         emoji: '🧾', csvFn: null,                                                  pdfFn: handlePrintGST },
+              { label: 'Monthly Report',     emoji: '📅', csvFn: null,                                                  pdfFn: handlePrintMonthly },
             ].map((btn, i) => (
-              <button key={i} onClick={btn.action} className="btn-ghost" style={{ width: '100%', justifyContent: 'flex-start', fontSize: 14, padding: '12px 14px' }}>
+              <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '10px 12px', borderRadius: 12, border: '1px solid var(--border)', background: 'white' }}>
                 <span style={{ fontSize: 18 }}>{btn.emoji}</span>
-                <span style={{ flex: 1, textAlign: 'left' }}>{btn.label}</span>
-                <span style={{ fontSize: 12, color: 'var(--green)', fontWeight: 700 }}>↓ CSV</span>
-              </button>
+                <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{btn.label}</span>
+                {btn.csvFn && (
+                  <button onClick={btn.csvFn} style={{ background: 'var(--green-light)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--green)', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
+                    📊 Excel
+                  </button>
+                )}
+                {btn.pdfFn && (
+                  <button onClick={btn.pdfFn} style={{ background: 'var(--red-light)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--red)', fontSize: 11, fontWeight: 800, cursor: 'pointer' }}>
+                    📄 PDF
+                  </button>
+                )}
+              </div>
             ))}
           </div>
-          <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 10, textAlign: 'center' }}>
-            CSV files open in Excel, Google Sheets — free!
-          </p>
         </div>
 
         {/* Premium upsell */}

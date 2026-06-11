@@ -102,7 +102,7 @@ export default function PartyDetailScreen({ party, onBack }) {
     if (window.confirm('Delete this transaction?')) deleteTransaction(txnId)
   }
 
-  const typeLabels = { sale: 'Sale', purchase: 'Purchase', receipt: 'Payment Received', payment: 'Payment Made' }
+  const typeLabels = { sale: 'Invoice Raised', purchase: 'Purchase Invoice', receipt: 'Payment Received ✓', payment: 'Payment Made ✓' }
 
   return (
     <div style={{ paddingBottom: 80 }}>

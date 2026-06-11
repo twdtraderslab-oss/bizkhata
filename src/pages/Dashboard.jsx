@@ -286,8 +286,8 @@ export default function Dashboard({ onNavigate }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {AI_SUGGESTIONS.map((q, i) => (
               <button key={i} onClick={() => {
-                const aiBtn = document.querySelector('[data-ai-open]')
-                if (aiBtn) aiBtn.click()
+                // Dispatch custom event to open AI with pre-filled question
+                window.dispatchEvent(new CustomEvent('hisaabpro-ai-open', { detail: { question: q } }))
               }} style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid #DDD6FE', background: 'white', cursor: 'pointer', textAlign: 'left', fontSize: 13, color: '#5B21B6', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 14 }}>→</span> {q}
               </button>
