@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext'
 import { Users, Settings, Shield, HelpCircle, FileText, Info, Star, Bell } from 'lucide-react'
 
 export default function MoreMenuScreen({ onNavigate }) {
-  const { currentUser, business, language, logout } = useApp()
+  const { currentUser, business, language, logout, transactions } = useApp()
   const hi = language === 'hi'
 
   const sections = [
@@ -29,23 +29,34 @@ export default function MoreMenuScreen({ onNavigate }) {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Clean white header */}
-      <div style={{ background: 'var(--surface)', padding: '18px 16px 14px', borderBottom: '1px solid var(--border)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: '#1E3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#F97316' }}>
+      <div style={{ background: 'var(--surface)', padding: '16px 16px 14px', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 12 }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, color: 'var(--accent)', flexShrink: 0 }}>
             {currentUser?.name?.[0] || 'H'}
           </div>
           <div>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: '#1E3A5F' }}>{currentUser?.name}</div>
-            <div style={{ fontSize: 12, color: '#94A3B8' }}>{business?.name}</div>
-            <div style={{ marginTop: 4, background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: 6, padding: '2px 8px', display: 'inline-block', fontSize: 11, fontWeight: 700, color: '#F97316' }}>Free Plan</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--brand)' }}>{currentUser?.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 1 }}>{business?.name}</div>
           </div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          {[
+            { label: 'Current Plan', value: 'Free', color: 'var(--accent)', bg: 'var(--accent-light)' },
+            { label: 'Recovered', value: (() => { const m = new Date().getMonth(); const amt = transactions.filter(t=>{const d=new Date(t.date);return t.type==='receipt'&&d.getMonth()===m}).reduce((s,t)=>s+t.amount,0); return amt >= 1000 ? `₹${(amt/1000).toFixed(0)}K` : `₹${amt}` })(), color: 'var(--green)', bg: 'var(--green-light)' },
+            { label: 'Upgrade', value: '₹999/yr', color: 'var(--recovery)', bg: 'var(--recovery-light)', action: () => onNavigate('upgrade') },
+          ].map((s,i) => (
+            <div key={i} onClick={s.action} style={{ background: s.bg, borderRadius: 10, padding: '8px 10px', cursor: s.action ? 'pointer' : 'default' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, color: s.color }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: s.color, opacity: 0.75, marginTop: 1 }}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Upgrade Banner */}
       <div onClick={() => onNavigate('upgrade')} style={{ margin: '14px 16px 0', background: 'var(--recovery)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ color: '#4ADE80', fontSize: 11, fontWeight: 700, marginBottom: 3 }}>🚀 UNLOCK RECOVERY FEATURES</div>
+          <div style={{ color: '#4ADE80', fontSize: 11, fontWeight: 700, marginBottom: 3, letterSpacing: '0.4px' }}>RECOVER MORE PAYMENTS FASTER</div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'white' }}>₹999/year</div>
           <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, marginTop: 2 }}>AI Recovery · Auto WhatsApp · UPI Collect</div>
         </div>

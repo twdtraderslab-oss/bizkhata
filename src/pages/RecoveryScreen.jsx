@@ -115,7 +115,10 @@ export default function RecoveryScreen({ onNavigate }) {
                     <span style={{ fontSize: 11, fontWeight: 700, color: riskColor, background: riskBg, padding: '2px 7px', borderRadius: 6 }}>{p.risk} Risk</span>
                   </div>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: '#059669' }}>{fmtFull(p.balance)}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 15, color: 'var(--green)' }}>{fmtFull(p.balance)}</div>
+                    <div style={{ fontSize: 11, color: p.risk === 'High' ? 'var(--red)' : 'var(--text-muted)', marginTop: 2, fontWeight: p.risk === 'High' ? 700 : 400 }}>
+                      {p.daysAgo > 0 ? `${p.daysAgo}d overdue` : 'Pending'}
+                    </div>
                     {p.phone && (
                       <button onClick={() => window.open(`https://wa.me/91${p.phone}?text=${encodeURIComponent(`Dear ${p.name}, your outstanding balance is ${fmtFull(p.balance)}. Please arrange payment. Thanks.`)}`, '_blank')} style={{ background: '#25D366', border: 'none', borderRadius: 7, padding: '3px 8px', color: 'white', fontSize: 10, fontWeight: 700, cursor: 'pointer', marginTop: 3 }}>WhatsApp</button>
                     )}

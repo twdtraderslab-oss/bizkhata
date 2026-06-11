@@ -269,21 +269,3 @@ html, body, #root {
 .gradient-text { background: linear-gradient(135deg, var(--accent), var(--brand)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .glow-green { box-shadow: 0 0 16px rgba(5,150,105,0.15); }
 .glow-red   { box-shadow: 0 0 16px rgba(220,38,38,0.15); }
-
-/* ── MOBILE CHROME VIEWPORT FIX ─────────────────────── */
-/* 100vh includes address bar on mobile Chrome — use dvh instead */
-@supports (min-height: 100dvh) {
-  html, body, #root {
-    min-height: 100dvh;
-  }
-}
-/* Fallback for older browsers that don't support dvh */
-@supports not (min-height: 100dvh) {
-  html, body, #root {
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
-  }
-  html {
-    height: -webkit-fill-available;
-  }
-}

@@ -192,11 +192,17 @@ export default function PartyDetailScreen({ party, onBack }) {
         ) : (
           <div className="card" style={{ overflow: 'hidden' }}>
             {partyTxns.map((t, i) => {
-              const isIncoming = t.type === 'sale' || t.type === 'receipt'
+              // Invoice Raised / Purchase = DEBIT = RED with MINUS
+              // Payment Received / Payment Made = CREDIT = GREEN with PLUS
+              const isDebit  = t.type === 'sale' || t.type === 'purchase'
+              const isCredit = t.type === 'receipt' || t.type === 'payment'
+              const txnColor = isDebit ? 'var(--red)' : 'var(--green)'
+              const txnBg    = isDebit ? 'var(--red-light)' : 'var(--green-light)'
+              const txnSign  = isDebit ? '−' : '+'
               return (
                 <div key={t.id} style={{ padding: '12px 14px', borderBottom: i < partyTxns.length - 1 ? '1px solid var(--border-light)' : 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isIncoming ? 'var(--green-light)' : 'var(--red-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {isIncoming ? <TrendingUp size={15} color="var(--green)" /> : <TrendingDown size={15} color="var(--red)" />}
+                  <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: txnBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {isDebit ? <TrendingUp size={15} color="var(--green)" /> : <TrendingDown size={15} color="var(--red)" />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

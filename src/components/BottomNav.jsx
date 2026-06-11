@@ -18,7 +18,7 @@ export default function BottomNav({ activeTab, onTabChange }) {
 
   return (
     <nav style={{
-      position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 480,
+      position: 'fixed', bottom: 0, left: 0, right: 0, maxWidth: 480, margin: '0 auto',
       background: 'white', borderTop: '1px solid #E2E8F0',
       display: 'flex', paddingBottom: 'env(safe-area-inset-bottom)',
       boxShadow: '0 -2px 12px rgba(0,0,0,0.06)', zIndex: 100,

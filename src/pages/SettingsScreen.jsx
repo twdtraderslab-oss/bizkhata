@@ -7,6 +7,10 @@ export default function SettingsScreen({ onNavigate }) {
   const hi = language === 'hi'
   const [showBusinessModal, setShowBusinessModal] = useState(false)
   const [showPlanModal, setShowPlanModal] = useState(false)
+  const [showNotifModal, setShowNotifModal] = useState(false)
+  const [showPinModal, setShowPinModal] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
+  const [showPwdModal, setShowPwdModal] = useState(false)
 
   const sections = [
     {
@@ -21,14 +25,14 @@ export default function SettingsScreen({ onNavigate }) {
       title: hi ? 'प्राथमिकताएं' : 'Preferences',
       items: [
         { icon: <Globe size={18} color="var(--indigo-mid)" />, label: hi ? 'भाषा' : 'Language', sub: language === 'hi' ? 'हिंदी' : 'English', action: () => setLanguage(language === 'hi' ? 'en' : 'hi') },
-        { icon: <Bell size={18} color="var(--indigo-mid)" />, label: hi ? 'नोटिफिकेशन' : 'Notifications', sub: hi ? 'चालू' : 'Enabled', action: () => {} },
-        { icon: <Shield size={18} color="var(--indigo-mid)" />, label: hi ? 'सुरक्षा और PIN' : 'Security & PIN', sub: hi ? 'PIN सेट करें' : 'Set app PIN lock', action: () => {} },
+        { icon: <Bell size={18} color="var(--brand)" />, label: hi ? 'नोटिफिकेशन' : 'Notifications', sub: hi ? 'चालू' : 'Enabled', action: () => setShowNotifModal(true) },
+        { icon: <Shield size={18} color="var(--brand)" />, label: hi ? 'सुरक्षा और PIN' : 'Security & PIN', sub: hi ? 'PIN सेट करें' : 'Set app PIN lock', action: () => setShowPinModal(true) },
       ]
     },
     {
       title: hi ? 'सहायता' : 'Support',
       items: [
-        { icon: <HelpCircle size={18} color="var(--text-muted)" />, label: hi ? 'मदद और सहायता' : 'Help & Support', sub: hi ? 'FAQ, हमसे संपर्क करें' : 'FAQ, contact us', action: () => {} },
+        { icon: <HelpCircle size={18} color="var(--brand)" />, label: hi ? 'मदद और सहायता' : 'Help & Support', sub: hi ? 'FAQ, हमसे संपर्क करें' : 'FAQ, contact us', action: () => setShowHelpModal(true) },
       ]
     }
   ]
@@ -84,6 +88,46 @@ export default function SettingsScreen({ onNavigate }) {
       </div>
 
       {showPlanModal && <PlanModal onClose={() => setShowPlanModal(false)} />}
+      {showNotifModal && <SimpleModal title="Notifications" onClose={() => setShowNotifModal(false)}>
+        <p style={{fontSize:14,color:'var(--text-secondary)',lineHeight:1.7}}>
+          Push notifications are enabled by default.<br/><br/>
+          • Overdue invoice alerts<br/>
+          • Low stock warnings<br/>
+          • Payment reminders<br/><br/>
+          To manage notifications, go to your phone Settings → HisaabPro → Notifications.
+        </p>
+      </SimpleModal>}
+      {showPinModal && <SimpleModal title="Security & PIN" onClose={() => setShowPinModal(false)}>
+        <p style={{fontSize:14,color:'var(--text-secondary)',lineHeight:1.7}}>
+          PIN lock feature is coming soon!<br/><br/>
+          This will allow you to:<br/>
+          • Set a 4-digit PIN to open the app<br/>
+          • Protect your business data<br/>
+          • Enable biometric unlock<br/><br/>
+          For now, your account is secured by your email password.
+        </p>
+      </SimpleModal>}
+      {showHelpModal && <SimpleModal title="Help & Support" onClose={() => setShowHelpModal(false)}>
+        <div style={{display:'flex',flexDirection:'column',gap:12}}>
+          {[
+            {q:'How to add a customer?', a:'Hisaab → Parties → tap + button'},
+            {q:'How to create an invoice?', a:'Hisaab → Invoices → tap + button'},
+            {q:'How does Recovery Score work?', a:'Based on unpaid invoices, outstanding amount, and overdue days.'},
+            {q:'How to send WhatsApp reminder?', a:'Recovery tab → Priority Follow-Ups → WhatsApp button'},
+            {q:'How to export data?', a:'Hisaab → Reports → Export section → Excel or PDF'},
+          ].map((item,i) => (
+            <div key={i} style={{background:'var(--bg)',borderRadius:10,padding:'12px 14px'}}>
+              <div style={{fontWeight:700,fontSize:13,color:'var(--brand)',marginBottom:4}}>Q: {item.q}</div>
+              <div style={{fontSize:13,color:'var(--text-secondary)'}}>{item.a}</div>
+            </div>
+          ))}
+          <div style={{background:'var(--recovery-light)',borderRadius:10,padding:'12px 14px',border:'1px solid var(--green-light)'}}>
+            <div style={{fontWeight:700,fontSize:13,color:'var(--recovery)',marginBottom:3}}>Contact Support</div>
+            <div style={{fontSize:13,color:'var(--text-secondary)'}}>WhatsApp: +91 98765 43210<br/>Email: support@hisaabpro.app</div>
+          </div>
+        </div>
+      </SimpleModal>}
+      {showPwdModal && <PasswordResetModal onClose={() => setShowPwdModal(false)} />}
       {showBusinessModal && <BusinessModal onClose={() => setShowBusinessModal(false)} />}
     </div>
   )
@@ -223,6 +267,75 @@ function BusinessModal({ onClose }) {
             {hi ? 'सेव करें ✓' : 'Save Changes ✓'}
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+
+// ── Simple Modal wrapper ─────────────────────────────────────────────────────
+function SimpleModal({ title, onClose, children }) {
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:200, display:'flex', alignItems:'flex-end', backdropFilter:'blur(4px)' }}
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="card slide-up" style={{ width:'100%', borderRadius:'24px 24px 0 0', padding:'24px 20px 40px', maxHeight:'80vh', overflowY:'auto' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+          <h3 style={{ fontFamily:'var(--font-display)', fontSize:18, fontWeight:700, color:'var(--brand)' }}>{title}</h3>
+          <button onClick={onClose} style={{ background:'var(--bg)', border:'none', borderRadius:10, width:32, height:32, cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)' }}>✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ── Password Reset Modal ─────────────────────────────────────────────────────
+function PasswordResetModal({ onClose }) {
+  const { currentUser } = useApp()
+  const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleReset = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const { resetPassword } = await import('../utils/supabase.js')
+      await resetPassword(currentUser?.email || '', window.location.origin)
+      setSent(true)
+    } catch (e) {
+      setError('Failed to send reset email. Please try again.')
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:200, display:'flex', alignItems:'flex-end', backdropFilter:'blur(4px)' }}
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="card slide-up" style={{ width:'100%', borderRadius:'24px 24px 0 0', padding:'24px 20px 40px' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+          <h3 style={{ fontFamily:'var(--font-display)', fontSize:18, fontWeight:700, color:'var(--brand)' }}>Change Password</h3>
+          <button onClick={onClose} style={{ background:'var(--bg)', border:'none', borderRadius:10, width:32, height:32, cursor:'pointer', fontSize:18, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)' }}>✕</button>
+        </div>
+        {sent ? (
+          <div style={{ textAlign:'center', padding:'20px 0' }}>
+            <div style={{ fontSize:48, marginBottom:12 }}>✅</div>
+            <div style={{ fontFamily:'var(--font-display)', fontWeight:700, fontSize:18, color:'var(--green)', marginBottom:8 }}>Reset Email Sent!</div>
+            <div style={{ fontSize:14, color:'var(--text-secondary)', lineHeight:1.6 }}>Check your inbox at <strong>{currentUser?.email}</strong>.<br/>Click the link to set a new password.</div>
+            <button onClick={onClose} className="btn-primary" style={{ width:'100%', marginTop:20 }}>Done</button>
+          </div>
+        ) : (
+          <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+            <p style={{ fontSize:14, color:'var(--text-secondary)', lineHeight:1.6 }}>
+              A password reset link will be sent to:<br/>
+              <strong style={{ color:'var(--brand)' }}>{currentUser?.email}</strong>
+            </p>
+            {error && <p style={{ color:'var(--red)', fontSize:13 }}>{error}</p>}
+            <button className="btn-primary" style={{ width:'100%' }} onClick={handleReset} disabled={loading}>
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

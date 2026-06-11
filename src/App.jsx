@@ -19,7 +19,7 @@ import RecoveryDashboard from './pages/RecoveryDashboard'
 import BackupScreen from './pages/BackupScreen'
 import { AboutPage, PrivacyPage, TermsPage, HelpPage, UpgradePage } from './pages/StaticPages'
 import BottomNav from './components/BottomNav'
-import AIAgent from './components/AIAgent'
+// AI Agent integrated into Recovery tab
 
 function AppShell() {
   const { currentUser } = useApp()
@@ -96,12 +96,12 @@ function AppShell() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100dvh', background: '#F8FAFC', position: 'relative' }}>
-      <div style={{ paddingBottom: 'calc(72px + env(safe-area-inset-bottom))', minHeight: '100dvh', overflowY: 'auto' }}>
+    <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: '#F8FAFC', position: 'relative' }}>
+      <div style={{ paddingBottom: 72, minHeight: '100vh', overflowY: 'auto' }}>
         {renderScreen()}
       </div>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
-      <AIAgent />
+      {/* AI Agent moved to Recovery tab */}
     </div>
   )
 }
