@@ -5,7 +5,17 @@ import { Search, Plus, ChevronRight, TrendingUp, TrendingDown, Edit2, Trash2, Mo
 const fmtFull = n => `₹${n.toLocaleString('en-IN')}`
 
 export default function PartiesScreen({ onNavigate }) {
-  const { parties, language, deleteParty } = useApp()
+  const { parties, language, deleteParty, transactions } = useApp()
+
+  const getRisk = (party) => {
+    const txns = transactions.filter(t => t.partyId === party.id)
+    const payments = txns.filter(t => t.type === 'receipt' || t.type === 'payment')
+    const lastPayment = payments.sort((a,b) => new Date(b.date)-new Date(a.date))[0]
+    const daysSince = lastPayment ? Math.floor((new Date()-new Date(lastPayment.date))/(1000*60*60*24)) : 999
+    if (party.balance > 100000 || daysSince > 30) return { score: 'High', color: '#DC2626', bg: '#FEF2F2', emoji: '🔴' }
+    if (party.balance > 30000 || daysSince > 14) return { score: 'Medium', color: '#D97706', bg: '#FFFBEB', emoji: '🟡' }
+    return { score: 'Low', color: '#059669', bg: '#F0FDF4', emoji: '🟢' }
+  }
   const hi = language === 'hi'
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')

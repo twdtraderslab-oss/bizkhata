@@ -57,7 +57,7 @@ export default function RemindersScreen() {
       {/* Header — AMOUNTS not counts */}
       <div style={{ background: 'linear-gradient(135deg, #0369A1, #0284C7)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 16 }}>
-          {hi ? 'रिमाइंडर & वसूली' : 'Reminders & Recovery'}
+          {hi ? 'पेमेंट रिकवरी सेंटर' : 'Payment Recovery Center'}
         </h2>
 
         {/* BIG AMOUNT CARDS */}
@@ -116,7 +116,7 @@ export default function RemindersScreen() {
 
         {/* Tab */}
         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 3, marginTop: 14 }}>
-          {[{ id: 'bulk', label: '📱 Bulk WhatsApp' }, { id: 'alerts', label: '🔔 Due Alerts' }].map(tab => (
+          {[{ id: 'bulk', label: '🚀 Recover Now' }, { id: 'alerts', label: '⚡ Alert Queue' }, { id: 'pipeline', label: '📊 Pipeline' }].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{ flex: 1, padding: '9px 4px', borderRadius: 9, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 12, background: activeTab === tab.id ? 'white' : 'transparent', color: activeTab === tab.id ? '#0369A1' : 'rgba(255,255,255,0.7)', transition: 'all 0.2s' }}>
               {tab.label}
             </button>
@@ -231,6 +231,75 @@ export default function RemindersScreen() {
               })
             )}
           </>
+        )}
+
+        {/* RECOVERY PIPELINE TAB */}
+        {activeTab === 'pipeline' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="card" style={{ padding: 16 }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, marginBottom: 14, color: 'var(--indigo)' }}>
+                📊 Recovery Status Pipeline
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden', borderRadius: 10, border: '1px solid var(--border)' }}>
+                {[
+                  { stage: 'No Reminder Sent', color: 'var(--text-muted)', bg: 'var(--bg)',          count: overdueParties.filter(p => !sent.includes(p.id)).length,       amt: overdueParties.filter(p => !sent.includes(p.id)).reduce((s,p)=>s+p.balance,0) },
+                  { stage: 'Reminder Sent',    color: '#2563EB',           bg: '#EFF6FF',            count: sent.filter(id => !responded.includes(id) && !paid.includes(id)).length, amt: overdueParties.filter(p => sent.includes(p.id) && !responded.includes(p.id) && !paid.includes(p.id)).reduce((s,p)=>s+p.balance,0) },
+                  { stage: 'Responded',        color: 'var(--amber)',      bg: 'var(--amber-light)', count: responded.filter(id => !paid.includes(id)).length,              amt: overdueParties.filter(p => responded.includes(p.id) && !paid.includes(p.id)).reduce((s,p)=>s+p.balance,0) },
+                  { stage: 'Paid ✓',           color: 'var(--green)',      bg: 'var(--green-light)', count: paid.length,                                                    amt: overdueParties.filter(p => paid.includes(p.id)).reduce((s,p)=>s+p.balance,0) },
+                ].map((s, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', padding: '13px 16px', borderBottom: i < 3 ? '1px solid var(--border-light)' : 'none', background: s.bg }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: s.color, marginRight: 12, flexShrink: 0 }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: s.color }}>{s.stage}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{s.count} customers</div>
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 15, color: s.color }}>{fmtFull(s.amt)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Per customer timeline */}
+            {overdueParties.length > 0 && (
+              <div className="card" style={{ overflow: 'hidden' }}>
+                <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border-light)' }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--indigo)' }}>Recovery Timeline</h3>
+                </div>
+                {overdueParties.slice(0, 5).map((party, i) => {
+                  const isSent = sent.includes(party.id)
+                  const isResponded = responded.includes(party.id)
+                  const isPaid = paid.includes(party.id)
+                  const steps = [
+                    { label: 'Pending',   done: true,        color: 'var(--text-muted)' },
+                    { label: 'Sent',      done: isSent,      color: '#2563EB' },
+                    { label: 'Responded', done: isResponded, color: 'var(--amber)' },
+                    { label: 'Paid',      done: isPaid,       color: 'var(--green)' },
+                  ]
+                  return (
+                    <div key={party.id} style={{ padding: '12px 16px', borderBottom: i < overdueParties.length - 1 ? '1px solid var(--border-light)' : 'none' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                        <span style={{ fontWeight: 700, fontSize: 13 }}>{party.name}</span>
+                        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 13, color: 'var(--green)' }}>{fmtFull(party.balance)}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                        {steps.map((step, j) => (
+                          <React.Fragment key={j}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 50 }}>
+                              <div style={{ width: 20, height: 20, borderRadius: '50%', background: step.done ? step.color : 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white', fontWeight: 700 }}>
+                                {step.done ? '✓' : '·'}
+                              </div>
+                              <div style={{ fontSize: 9, color: step.done ? step.color : 'var(--text-muted)', marginTop: 3, fontWeight: step.done ? 700 : 400 }}>{step.label}</div>
+                            </div>
+                            {j < steps.length - 1 && <div style={{ flex: 1, height: 2, background: steps[j+1].done ? steps[j+1].color : 'var(--border)', marginBottom: 14, transition: 'background 0.3s' }} />}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

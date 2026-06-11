@@ -23,22 +23,22 @@ export default function MoreScreen({ onNavigate }) {
       screen: 'purchase-orders',
     },
     {
-      title: hi ? 'रिमाइंडर & अलर्ट' : 'Reminders & Alerts',
-      subtitle: hi ? 'बकाया वसूली तेज़ करें' : 'Bulk WhatsApp, due alerts',
+      title: hi ? 'पेमेंट रिकवरी सेंटर' : 'Payment Recovery Center',
+      subtitle: hi ? 'बकाया पैसा वापस पाएं' : 'Recover outstanding payments faster',
       emoji: '📱', color: '#0369A1', bg: '#E0F2FE',
       screen: 'reminders',
       badge: overdueCount > 0 ? overdueCount : null,
       badgeColor: 'var(--red)',
     },
     {
-      title: hi ? 'ऑटो रिमाइंडर' : 'Auto Reminder Engine',
-      subtitle: hi ? 'Day 0, 3, 7, 15, 30 automatic' : 'Automatic follow-up schedule',
+      title: hi ? 'AI रिकवरी एजेंट' : 'AI Recovery Agent',
+      subtitle: hi ? 'Automated WhatsApp escalation' : '✓ Day 0  ✓ Day 3  ✓ Day 7  ✓ Day 30',
       emoji: '⚡', color: '#7C3AED', bg: '#F3E8FF',
       screen: 'auto-reminders',
     },
     {
-      title: hi ? 'रिकवरी डैशबोर्ड' : 'Recovery Dashboard',
-      subtitle: hi ? 'वसूली दर + UPI कलेक्ट' : 'Recovery rate + UPI collect',
+      title: hi ? 'रिकवरी & UPI कलेक्ट' : 'Recovery + UPI Collect',
+      subtitle: hi ? 'Success rate + Pay Now links' : 'Recovery rate, risk scores, UPI links',
       emoji: '💳', color: '#059669', bg: '#D1FAE5',
       screen: 'recovery',
     },
@@ -73,10 +73,10 @@ export default function MoreScreen({ onNavigate }) {
       {/* Header */}
       <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
-          {hi ? 'सभी फीचर' : 'All Features'}
+          {hi ? 'HisaabPro टूल्स' : 'HisaabPro Tools'}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>
-          {hi ? 'अपने बिज़नेस के सभी टूल्स' : 'Complete business toolkit'}
+          {hi ? 'MSME Recovery & Business Management' : 'Recover Payments · Manage Business · Grow Faster'}
         </p>
       </div>
 
@@ -84,8 +84,8 @@ export default function MoreScreen({ onNavigate }) {
         {/* Quick Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 20 }}>
           {[
-            { label: hi ? 'बकायेदार ग्राहक' : 'Outstanding Customers', value: outstandingParties, color: 'var(--green)', bg: 'var(--green-light)', emoji: '👥' },
-            { label: hi ? 'अतिदेय इनवॉइस' : 'Overdue Invoices', value: overdueCount, color: overdueCount > 0 ? 'var(--red)' : 'var(--green)', bg: overdueCount > 0 ? 'var(--red-light)' : 'var(--green-light)', emoji: overdueCount > 0 ? '⚠️' : '✅' },
+            { label: hi ? 'रिकवरी टारगेट' : 'Recovery Targets', value: outstandingParties, color: 'var(--green)', bg: 'var(--green-light)', emoji: '👥' },
+            { label: hi ? 'Overdue इनवॉइस' : 'Overdue Invoices', value: overdueCount, color: overdueCount > 0 ? 'var(--red)' : 'var(--green)', bg: overdueCount > 0 ? 'var(--red-light)' : 'var(--green-light)', emoji: overdueCount > 0 ? '⚠️' : '✅' },
           ].map((s, i) => (
             <div key={i} className="card" style={{ padding: 14, background: s.bg, border: 'none' }}>
               <div style={{ fontSize: 22, marginBottom: 6 }}>{s.emoji}</div>

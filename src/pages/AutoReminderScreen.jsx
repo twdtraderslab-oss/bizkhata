@@ -72,10 +72,10 @@ export default function AutoReminderScreen() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
-              {hi ? 'ऑटो रिमाइंडर' : 'Auto Reminder Engine'}
+              {hi ? 'AI रिकवरी एजेंट' : 'AI Recovery Agent'}
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>
-              {hi ? 'Day 0, 3, 7, 15, 30 — automatic' : 'Automatic follow-up schedule'}
+              {hi ? 'Day 0, 3, 7, 15, 30 — Automated Escalation' : '✓ Day 0 Reminder  ✓ Day 3 Follow-up  ✓ Day 7 Escalation'}
             </p>
           </div>
           {/* Engine Toggle */}
@@ -132,9 +132,9 @@ export default function AutoReminderScreen() {
         <div className="card" style={{ overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border-light)' }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--indigo)' }}>
-              {hi ? 'रिमाइंडर शेड्यूल' : 'Reminder Schedule'}
+              {hi ? 'Escalation Schedule' : 'AI Recovery Escalation Schedule'}
             </h3>
-            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>{hi ? 'इनवॉइस बनने के बाद कितने दिन में भेजें' : 'Days after invoice creation to send reminder'}</p>
+            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 3 }}>{hi ? 'Invoice बनने के बाद automatic follow-up' : 'Automated WhatsApp escalation sequence'}</p>
           </div>
           {schedule.map((s, i) => (
             <div key={i} style={{ padding: '14px 16px', borderBottom: i < schedule.length - 1 ? '1px solid var(--border-light)' : 'none' }}>

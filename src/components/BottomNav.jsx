@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext'
 const TABS = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Home',    labelHi: 'होम' },
   { id: 'parties',   icon: Users,          label: 'Parties',  labelHi: 'पार्टी' },
-  { id: 'invoices',  icon: FileText,       label: 'Invoice',  labelHi: 'बिल' },
+  { id: 'invoices',  icon: FileText,       label: 'Invoices', labelHi: 'इनवॉइस' },
   { id: 'inventory', icon: Package,        label: 'Stock',    labelHi: 'स्टॉक' },
   { id: 'more',      icon: MoreHorizontal, label: 'More',     labelHi: 'और' },
 ]

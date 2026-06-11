@@ -48,15 +48,15 @@ export default function RecoveryDashboard() {
     <div style={{ paddingBottom: 80 }}>
       <div style={{ background: 'linear-gradient(135deg, #059669, #047857)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
-          {hi ? 'रिकवरी डैशबोर्ड' : 'Recovery Dashboard'}
+          {hi ? 'पेमेंट रिकवरी सेंटर' : 'Payment Recovery Center'}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginBottom: 16 }}>
-          {hi ? 'इस महीने का प्रदर्शन' : 'This month\'s collection performance'}
+          {hi ? 'AI Recovery Agent — आपका पैसा वापस लाएं' : 'AI Recovery Agent — Recover What You\'re Owed'}
         </p>
 
         {/* BIG RECOVERY NUMBER */}
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 18, padding: '20px', border: '1px solid rgba(255,255,255,0.25)', marginBottom: 14, textAlign: 'center' }}>
-          <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6 }}>{hi ? 'इस महीने वसूल हुआ' : 'Recovered This Month'}</div>
+          <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, marginBottom: 6 }}>{hi ? 'HisaabPro द्वारा वसूल हुआ' : 'Recovered via HisaabPro'}</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 900, color: 'white' }}>{fmtFull(recoveredThisMonth)}</div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 10 }}>
             <div style={{ textAlign: 'center' }}>
@@ -99,12 +99,47 @@ export default function RecoveryDashboard() {
           </div>
         </div>
 
+        {/* Risk Score Breakdown */}
+        <div className="card" style={{ padding: 16, marginBottom: 0 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, marginBottom: 14, color: 'var(--indigo)' }}>
+            🎯 Customer Risk Breakdown
+          </h3>
+          {(() => {
+            const withRisk = parties.filter(p => p.balance > 0 && p.balanceType === 'to_receive').map(p => {
+              const txns = transactions.filter(t => t.partyId === p.id)
+              const payments = txns.filter(t => t.type === 'receipt')
+              const lastPmt = payments.sort((a,b) => new Date(b.date)-new Date(a.date))[0]
+              const daysSince = lastPmt ? Math.floor((new Date()-new Date(lastPmt.date))/(1000*60*60*24)) : 999
+              const risk = p.balance > 100000 || daysSince > 30 ? 'High' : p.balance > 30000 || daysSince > 14 ? 'Medium' : 'Low'
+              return { ...p, risk }
+            })
+            const high   = withRisk.filter(p => p.risk === 'High')
+            const medium = withRisk.filter(p => p.risk === 'Medium')
+            const low    = withRisk.filter(p => p.risk === 'Low')
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10 }}>
+                {[
+                  { label: 'High Risk', count: high.length,   amt: high.reduce((s,p)=>s+p.balance,0),   color: 'var(--red)',   bg: 'var(--red-light)' },
+                  { label: 'Medium',    count: medium.length, amt: medium.reduce((s,p)=>s+p.balance,0), color: 'var(--amber)', bg: 'var(--amber-light)' },
+                  { label: 'Low Risk',  count: low.length,    amt: low.reduce((s,p)=>s+p.balance,0),    color: 'var(--green)', bg: 'var(--green-light)' },
+                ].map((r, i) => (
+                  <div key={i} style={{ background: r.bg, borderRadius: 12, padding: '12px 10px', textAlign: 'center' }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 900, color: r.color }}>{r.count}</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: r.color, marginBottom: 4 }}>{r.label}</div>
+                    <div style={{ fontSize: 11, color: r.color, opacity: 0.8 }}>{fmtFull(r.amt)}</div>
+                  </div>
+                ))}
+              </div>
+            )
+          })()}
+        </div>
+
         {/* Top Debtors */}
         {topDebtors.length > 0 && (
           <div className="card" style={{ overflow: 'hidden' }}>
             <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--border-light)' }}>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--indigo)' }}>
-                🎯 {hi ? 'टॉप बकायेदार' : 'Top Outstanding Customers'}
+                🎯 {hi ? 'रिकवरी अवसर' : 'Recovery Opportunities'}
               </h3>
             </div>
             {topDebtors.map((p, i) => {

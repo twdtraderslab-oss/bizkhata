@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { TrendingUp, TrendingDown, AlertTriangle, ChevronRight, ArrowUpRight, Bell, Zap } from 'lucide-react'
+import { TrendingUp, TrendingDown, AlertTriangle, ChevronRight, ArrowUpRight, Bell, Zap, Send } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import NotificationsScreen from '../components/NotificationsScreen'
 
@@ -94,12 +94,18 @@ export default function Dashboard({ onNavigate }) {
         <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
         <div style={{ position: 'absolute', bottom: -20, right: 60, width: 80, height: 80, borderRadius: '50%', background: 'rgba(249,115,22,0.15)' }} />
 
-        {/* Top Row */}
+        {/* Top Row - Recovery Score replaces greeting */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, position: 'relative' }}>
           <div>
-            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginBottom: 3 }}>{greeting} 🙏</p>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'white' }}>{currentUser?.name}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 1 }}>{business?.name}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <div style={{ background: 'var(--saffron)', borderRadius: 8, padding: '2px 10px', fontSize: 11, fontWeight: 800, color: 'white' }}>
+                {recoveryRate >= 70 ? '🟢' : recoveryRate >= 40 ? '🟡' : '🔴'} Recovery Score: {Math.min(100, recoveryRate + 20)}/100
+              </div>
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'white' }}>{business?.name}</h2>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 1 }}>
+              {topDefaulters.length > 0 ? `${topDefaulters.length} customers need follow-up` : '✓ No urgent follow-ups today'}
+            </p>
           </div>
           <button onClick={() => setShowNotifications(true)} style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 12, padding: '10px 12px', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, position: 'relative' }}>
             <Bell size={16} />
@@ -107,32 +113,26 @@ export default function Dashboard({ onNavigate }) {
           </button>
         </div>
 
-        {/* Cash Position — BIG NUMBERS */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-          <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: 16, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-              <TrendingUp size={13} color="#4ADE80" />
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>{hi ? 'पाना है' : 'To Receive'}</span>
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 900, color: '#4ADE80' }}>{fmt(stats.totalReceivable)}</div>
-            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, marginTop: 2 }}>{fmtFull(stats.totalReceivable)}</div>
+        {/* RECOVERABLE TODAY — Hero Card */}
+        <div style={{ background: 'rgba(249,115,22,0.2)', borderRadius: 20, padding: '18px 18px 16px', border: '2px solid rgba(249,115,22,0.4)', marginBottom: 12 }}>
+          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: 8 }}>
+            💰 Recoverable Today
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', borderRadius: 16, padding: '14px 16px', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 8 }}>
-              <TrendingDown size={13} color="#F87171" />
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11 }}>{hi ? 'देना है' : 'To Pay'}</span>
-            </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 900, color: '#F87171' }}>{fmt(stats.totalPayable)}</div>
-            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, marginTop: 2 }}>{fmtFull(stats.totalPayable)}</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 900, color: 'white', marginBottom: 4 }}>
+            {fmtFull(stats.totalReceivable)}
           </div>
+          <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginBottom: 14 }}>
+            {topDefaulters.length} customers pending · Net flow: <span style={{ color: netCashFlow >= 0 ? '#4ADE80' : '#F87171', fontWeight: 700 }}>{netCashFlow >= 0 ? '+' : ''}{fmt(netCashFlow)}</span>
+          </div>
+          <button onClick={() => onNavigate('reminders')} style={{ width: '100%', padding: '13px', borderRadius: 14, border: 'none', cursor: 'pointer', background: 'var(--saffron)', color: 'white', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 15, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <Send size={18} /> Recover Now
+          </button>
         </div>
 
-        {/* Net Cash Flow */}
+        {/* To Pay row */}
         <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 12, padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(255,255,255,0.12)' }}>
-          <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>{hi ? 'इस महीने नेट कैश फ्लो' : 'Net Cash Flow This Month'}</span>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: netCashFlow >= 0 ? '#4ADE80' : '#F87171' }}>
-            {netCashFlow >= 0 ? '+' : ''}{fmt(netCashFlow)}
-          </span>
+          <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>To Pay (Suppliers)</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: '#F87171' }}>{fmtFull(stats.totalPayable)}</span>
         </div>
       </div>
 
@@ -160,9 +160,9 @@ export default function Dashboard({ onNavigate }) {
         {/* ── Business Metrics (not software metrics) ─ */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
           {[
-            { label: hi ? 'बकाया' : 'Outstanding', value: fmt(stats.totalReceivable), sub: `${parties.filter(p=>p.balance>0&&p.balanceType==='to_receive').length} customers`, color: 'var(--green)', bg: 'var(--green-light)', screen: 'reminders' },
+            { label: hi ? 'रिकवरी टारगेट' : 'Recovery Target', value: fmt(stats.totalReceivable), sub: `${parties.filter(p=>p.balance>0&&p.balanceType==='to_receive').length} customers`, color: 'var(--green)', bg: 'var(--green-light)', screen: 'recovery' },
             { label: hi ? 'बिक्री' : 'Sales Month', value: fmt(salesThisMonth), sub: hi ? 'इस महीने' : 'this month', color: 'var(--indigo)', bg: 'var(--indigo-light)', screen: 'reports' },
-            { label: hi ? 'वसूली' : 'Collections', value: fmt(collectionsThisMonth), sub: `${recoveryRate}% rate`, color: 'var(--saffron)', bg: 'var(--saffron-light)', screen: 'recovery' },
+            { label: hi ? 'वसूल हुआ' : 'Recovered', value: fmt(collectionsThisMonth), sub: `${recoveryRate}% success`, color: 'var(--saffron)', bg: 'var(--saffron-light)', screen: 'recovery' },
           ].map((s, i) => (
             <div key={i} className="card stat-card" onClick={() => onNavigate(s.screen)} style={{ padding: '12px 10px', cursor: 'pointer', background: s.bg, border: 'none' }}>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 800, color: s.color, marginBottom: 3 }}>{s.value}</div>
@@ -176,7 +176,7 @@ export default function Dashboard({ onNavigate }) {
         <div className="card" style={{ padding: '16px', marginBottom: 16, background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)', border: '1px solid #BBF7D0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--green)' }}>
-              💰 {hi ? 'कलेक्शन' : 'Collections'}
+              💰 {hi ? 'पेमेंट रिकवरी' : 'Payment Recovery Center'}
             </h3>
             <button onClick={() => onNavigate('recovery')} style={{ background: 'var(--green)', border: 'none', borderRadius: 8, padding: '5px 12px', color: 'white', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
               View →
@@ -201,10 +201,10 @@ export default function Dashboard({ onNavigate }) {
           <div className="card" style={{ marginBottom: 16, overflow: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px 10px' }}>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-                🎯 {hi ? 'टॉप बकायेदार' : 'Top Defaulters'}
+                🎯 {hi ? 'प्राथमिक फॉलो-अप' : 'Priority Follow-Ups'}
               </h3>
               <button onClick={() => onNavigate('reminders')} style={{ background: 'none', border: 'none', color: 'var(--saffron)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                Remind All →
+                Start Recovery →
               </button>
             </div>
             {topDefaulters.map((p, i) => (
