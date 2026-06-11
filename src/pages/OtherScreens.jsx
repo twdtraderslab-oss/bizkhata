@@ -7,13 +7,35 @@ const fmtFull = n => `₹${Number(n).toLocaleString('en-IN')}`
 
 // ── Inventory Screen ──────────────────────────────────────────────────────────
 export function InventoryScreen() {
-  const { products, stockMovements, stockIn, stockOut, addProduct, updateProduct, deleteProduct, language } = useApp()
+  const { products, stockMovements, stockIn, stockOut, addProduct, updateProduct, deleteProduct, language, transactions } = useApp()
   const hi = language === 'hi'
   const [showAddProduct, setShowAddProduct] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [filter, setFilter] = useState('all')
   const [showEditModal, setShowEditModal] = useState(null)
   const [menuProductId, setMenuProductId] = useState(null)
+  const [stockView, setStockView] = useState('all') // all | fast | slow | dead
+
+  // Compute coverage days and movement category per product
+  const thisMonth = new Date().getMonth()
+  const thisYear  = new Date().getFullYear()
+  const productStats = {}
+  products.forEach(p => {
+    const monthlySalesTxns = (transactions || []).filter(t => {
+      const d = new Date(t.date)
+      return t.type === 'sale' && d.getMonth() === thisMonth && d.getFullYear() === thisYear
+    })
+    const movs = (stockMovements || []).filter(m => m.productId === p.id && m.type === 'out')
+    const lastSale = movs.sort((a,b) => new Date(b.date)-new Date(a.date))[0]
+    const monthlyOut = movs.filter(m => { const d = new Date(m.date); return d.getMonth() === thisMonth && d.getFullYear() === thisYear }).reduce((s,m) => s+m.qty, 0)
+    const avgDaily = monthlyOut / 30
+    const coverage = avgDaily > 0 ? Math.round(p.stock / avgDaily) : null
+    const daysSinceLastSale = lastSale ? Math.floor((new Date() - new Date(lastSale.date)) / (1000*60*60*24)) : null
+    let category = 'slow'
+    if (monthlyOut > 20) category = 'fast'
+    else if (daysSinceLastSale === null || daysSinceLastSale > 60) category = 'dead'
+    productStats[p.id] = { coverage, monthlyOut, lastSale: lastSale?.date, daysSinceLastSale, category }
+  })
   const [search, setSearch] = useState('')
 
   if (selectedProduct) return <ProductDetailScreen product={selectedProduct} onBack={() => setSelectedProduct(null)} />
@@ -24,8 +46,10 @@ export function InventoryScreen() {
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
-    const matchFilter = filter === 'all' || p.category === filter || (filter === 'low' && p.stock <= p.lowStockAlert)
-    return matchSearch && matchFilter
+    const matchFilter = filter === 'all' || p.category === filter
+    const pStat = productStats[p.id] || {}
+    const matchView = stockView === 'all' || (stockView === 'low' && p.stock <= p.lowStockAlert) || (stockView === 'fast' && pStat.category === 'fast') || (stockView === 'slow' && pStat.category === 'slow') || (stockView === 'dead' && pStat.category === 'dead')
+    return matchSearch && matchFilter && matchView
   })
 
   return (
@@ -57,15 +81,26 @@ export function InventoryScreen() {
       </div>
 
       <div style={{ padding: '14px 16px 0' }}>
+        {/* Stock Movement Filter */}
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8, marginBottom: 10 }}>
+          {[
+            { id: 'all', label: 'All' },
+            { id: 'fast', label: '🔥 Fast Moving' },
+            { id: 'slow', label: '🐢 Slow Moving' },
+            { id: 'dead', label: '💀 Dead Stock' },
+            { id: 'low', label: '⚠️ Low Stock' },
+          ].map(f => (
+            <button key={f.id} onClick={() => setStockView(f.id)} style={{ padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', border: stockView === f.id ? 'none' : '1px solid var(--border)', background: stockView === f.id ? (f.id === 'low' || f.id === 'dead' ? 'var(--red)' : f.id === 'slow' ? 'var(--amber)' : 'var(--saffron)') : 'white', color: stockView === f.id ? 'white' : 'var(--text-secondary)' }}>
+              {f.label}
+            </button>
+          ))}
+        </div>
         {/* Category filter */}
         <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8, marginBottom: 14 }}>
-          {[{ id: 'low', label: `⚠️ Low Stock`, labelHi: '⚠️ कम स्टॉक' }, ...categories.map(c => ({ id: c, label: c === 'all' ? 'All' : c, labelHi: c === 'all' ? 'सभी' : c }))].map(f => (
-            <button key={f.id} onClick={() => setFilter(f.id)} style={{
-              padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
-              border: filter === f.id ? 'none' : '1px solid var(--border)',
-              background: filter === f.id ? (f.id === 'low' ? 'var(--red)' : 'var(--saffron)') : 'white',
-              color: filter === f.id ? 'white' : 'var(--text-secondary)', transition: 'all 0.2s',
-            }}>{hi ? f.labelHi : f.label}</button>
+          {[{ id: 'all', label: 'All' }, ...categories.map(c => ({ id: c, label: c }))].filter(f => f.id !== 'all' || true).map(f => (
+            <button key={f.id} onClick={() => setFilter(f.id)} style={{ padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', border: filter === f.id ? 'none' : '1px solid var(--border)', background: filter === f.id ? 'var(--indigo)' : 'white', color: filter === f.id ? 'white' : 'var(--text-secondary)' }}>
+              {f.label === 'all' ? 'All Categories' : f.label}
+            </button>
           ))}
         </div>
 
@@ -124,18 +159,25 @@ export function InventoryScreen() {
                     </div>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                  {[
-                    { l: hi ? 'खरीद' : 'Purchase', v: fmtFull(p.purchasePrice) },
-                    { l: hi ? 'बिक्री' : 'Selling', v: fmtFull(p.sellingPrice), green: true },
-                    { l: hi ? 'स्टॉक मूल्य' : 'Stock Value', v: fmtFull(p.stock * p.purchasePrice) },
-                  ].map((s, i) => (
-                    <div key={i} style={{ background: 'var(--bg)', borderRadius: 9, padding: '7px 9px' }}>
-                      <div style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 2 }}>{s.l}</div>
-                      <div style={{ fontWeight: 700, fontSize: 12, color: s.green ? 'var(--green)' : 'var(--text-primary)' }}>{s.v}</div>
+                {/* Coverage days if available */}
+                {(() => {
+                  const pStat = productStats[p.id] || {}
+                  return (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
+                      {[
+                        { l: 'Purchase', v: fmtFull(p.purchasePrice) },
+                        { l: 'Selling', v: fmtFull(p.sellingPrice || 0), green: true },
+                        { l: 'Last Sale', v: pStat.lastSale ? `${pStat.daysSinceLastSale}d ago` : 'None' },
+                        { l: 'Coverage', v: pStat.coverage !== null ? `${pStat.coverage}d` : '—', warn: pStat.coverage !== null && pStat.coverage < 10 },
+                      ].map((s, i) => (
+                        <div key={i} style={{ background: s.warn ? 'var(--red-light)' : 'var(--bg)', borderRadius: 9, padding: '7px 6px' }}>
+                          <div style={{ fontSize: 9, color: 'var(--text-muted)', marginBottom: 2 }}>{s.l}</div>
+                          <div style={{ fontWeight: 700, fontSize: 11, color: s.warn ? 'var(--red)' : s.green ? 'var(--green)' : 'var(--text-primary)' }}>{s.v}</div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  )
+                })()}
               </div>
             )
           })}

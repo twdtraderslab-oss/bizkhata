@@ -38,17 +38,17 @@ export default function InvoicesScreen({ onNavigate }) {
             <Plus size={16} /> {hi ? 'नई' : 'New'}
           </button>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: '12px 14px', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, marginBottom: 4 }}>{hi ? 'बकाया' : 'Unpaid'}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: '#F87171' }}>{fmtFull(totalUnpaid)}</div>
-            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>{safeInvoices.filter(i => i.status === 'unpaid').length} invoices</div>
-          </div>
-          <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: '12px 14px', border: '1px solid rgba(255,255,255,0.15)' }}>
-            <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 11, marginBottom: 4 }}>{hi ? 'आंशिक' : 'Partial'}</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 800, color: '#FCD34D' }}>{fmtFull(totalPartial)}</div>
-            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>{safeInvoices.filter(i => i.status === 'partial').length} invoices</div>
-          </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+          {[
+            { label: hi ? 'चुकाया' : 'Paid',    value: fmtFull(safeInvoices.filter(i=>i.status==='paid').reduce((s,i)=>s+i.totalAmount,0)),    color: '#4ADE80' },
+            { label: hi ? 'बकाया' : 'Pending',  value: fmtFull(totalUnpaid + totalPartial), color: '#FCD34D' },
+            { label: hi ? 'अतिदेय' : 'Overdue', value: fmtFull(safeInvoices.filter(i=>i.status!=='paid'&&new Date(i.dueDate)<new Date()).reduce((s,i)=>s+i.totalAmount,0)), color: '#F87171' },
+          ].map((s,i) => (
+            <div key={i} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 12px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'center' }}>
+              <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 10, marginBottom: 4 }}>{s.label}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 800, color: s.color }}>{s.value}</div>
+            </div>
+          ))}
         </div>
       </div>
 
