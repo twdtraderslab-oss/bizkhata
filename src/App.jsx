@@ -96,8 +96,8 @@ function AppShell() {
   }
 
   return (
-    <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: '#F8FAFC', position: 'relative' }}>
-      <div style={{ paddingBottom: 72, minHeight: '100vh', overflowY: 'auto' }}>
+    <div style={{ maxWidth: 480, margin: '0 auto', minHeight: '100dvh', background: '#F8FAFC', position: 'relative' }}>
+      <div style={{ paddingBottom: 'calc(72px + env(safe-area-inset-bottom))', minHeight: '100dvh', overflowY: 'auto' }}>
         {renderScreen()}
       </div>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
