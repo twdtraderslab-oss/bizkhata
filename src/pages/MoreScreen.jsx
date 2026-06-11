@@ -24,11 +24,23 @@ export default function MoreScreen({ onNavigate }) {
     },
     {
       title: hi ? 'रिमाइंडर & अलर्ट' : 'Reminders & Alerts',
-      subtitle: hi ? 'बकाया वसूली तेज़ करें' : 'Collect payments faster',
+      subtitle: hi ? 'बकाया वसूली तेज़ करें' : 'Bulk WhatsApp, due alerts',
       emoji: '📱', color: '#0369A1', bg: '#E0F2FE',
       screen: 'reminders',
       badge: overdueCount > 0 ? overdueCount : null,
       badgeColor: 'var(--red)',
+    },
+    {
+      title: hi ? 'ऑटो रिमाइंडर' : 'Auto Reminder Engine',
+      subtitle: hi ? 'Day 0, 3, 7, 15, 30 automatic' : 'Automatic follow-up schedule',
+      emoji: '⚡', color: '#7C3AED', bg: '#F3E8FF',
+      screen: 'auto-reminders',
+    },
+    {
+      title: hi ? 'रिकवरी डैशबोर्ड' : 'Recovery Dashboard',
+      subtitle: hi ? 'वसूली दर + UPI कलेक्ट' : 'Recovery rate + UPI collect',
+      emoji: '💳', color: '#059669', bg: '#D1FAE5',
+      screen: 'recovery',
     },
     {
       title: hi ? 'रिपोर्ट' : 'Reports',

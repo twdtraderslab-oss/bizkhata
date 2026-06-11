@@ -5,15 +5,16 @@ import Dashboard from './pages/Dashboard'
 import PartiesScreen from './pages/PartiesScreen'
 import PartyDetailScreen from './pages/PartyDetailScreen'
 import InvoicesScreen from './pages/InvoicesScreen'
-import { InventoryScreen } from './pages/OtherScreens'
-import GSTReportsScreen from './pages/GSTReportsScreen'
+import { InventoryScreen, ReportsScreen } from './pages/OtherScreens'
 import SettingsScreen from './pages/SettingsScreen'
 import StaffScreen from './pages/StaffScreen'
 import CashBookScreen from './pages/CashBookScreen'
 import PurchaseOrderScreen from './pages/PurchaseOrderScreen'
 import RemindersScreen from './pages/RemindersScreen'
-import MoreScreen from './pages/MoreScreen'
+import AutoReminderScreen from './pages/AutoReminderScreen'
+import RecoveryDashboard from './pages/RecoveryDashboard'
 import BackupScreen from './pages/BackupScreen'
+import MoreScreen from './pages/MoreScreen'
 import BottomNav from './components/BottomNav'
 import AIAgent from './components/AIAgent'
 
@@ -24,13 +25,11 @@ function AppShell() {
 
   if (!currentUser) return <AuthScreen />
 
-  const navigate = (destination, data) => {
-    if (destination === 'party-detail') { setPartyDetail(data); return }
+  const navigate = (dest, data) => {
+    if (dest === 'party-detail') { setPartyDetail(data); return }
     setPartyDetail(null)
-    setActiveTab(destination)
+    setActiveTab(dest)
   }
-
-  const handleTabChange = (tab) => { setPartyDetail(null); setActiveTab(tab) }
 
   const renderScreen = () => {
     if (partyDetail) return <PartyDetailScreen party={partyDetail} onBack={() => setPartyDetail(null)} />
@@ -39,14 +38,16 @@ function AppShell() {
       case 'parties':         return <PartiesScreen onNavigate={navigate} />
       case 'invoices':        return <InvoicesScreen onNavigate={navigate} />
       case 'inventory':       return <InventoryScreen />
-      case 'reports':         return <GSTReportsScreen />
+      case 'reports':         return <ReportsScreen />
       case 'cashbook':        return <CashBookScreen />
       case 'purchase-orders': return <PurchaseOrderScreen />
       case 'reminders':       return <RemindersScreen />
+      case 'auto-reminders':  return <AutoReminderScreen />
+      case 'recovery':        return <RecoveryDashboard />
+      case 'backup':          return <BackupScreen />
       case 'settings':        return <SettingsScreen onNavigate={navigate} />
       case 'staff':           return <StaffScreen />
       case 'more':            return <MoreScreen onNavigate={navigate} />
-      case 'backup':          return <BackupScreen />
       default:                return <Dashboard onNavigate={navigate} />
     }
   }
@@ -56,7 +57,7 @@ function AppShell() {
       <div style={{ paddingBottom: 72, minHeight: '100vh', overflowY: 'auto' }}>
         {renderScreen()}
       </div>
-      <BottomNav activeTab={partyDetail ? 'parties' : activeTab} onTabChange={handleTabChange} />
+      <BottomNav activeTab={partyDetail ? 'parties' : activeTab} onTabChange={(tab) => { setPartyDetail(null); setActiveTab(tab) }} />
       <AIAgent />
     </div>
   )
