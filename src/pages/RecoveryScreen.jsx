@@ -43,7 +43,7 @@ export default function RecoveryScreen({ onNavigate }) {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Clean green header - different from accounting screens */}
-      <div style={{ background: '#064E3B', padding: '20px 16px 20px' }}>
+      <div style={{ background: 'var(--recovery)', padding: '18px 16px 16px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800, color: 'white', marginBottom: 3 }}>
           💰 {hi ? 'पेमेंट रिकवरी' : 'Payment Recovery'}
         </h1>
@@ -53,7 +53,7 @@ export default function RecoveryScreen({ onNavigate }) {
       </div>
 
       {/* Recovery Score with explanation */}
-      <div style={{ background: '#065F46', padding: '16px' }}>
+      <div style={{ background: 'var(--recovery-mid)', padding: '16px' }}>
         <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 16, padding: '16px', border: '1px solid rgba(255,255,255,0.15)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
             <div>
@@ -101,7 +101,7 @@ export default function RecoveryScreen({ onNavigate }) {
         {topPending.length > 0 && (
           <div style={{ background: 'white', borderRadius: 14, border: '1px solid #E2E8F0', overflow: 'hidden', marginBottom: 16 }}>
             <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: '#1E3A5F' }}>🎯 Priority Follow-Ups</span>
+              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: '#1E3A5F' }}>Priority Follow-Ups</span>
               <button onClick={() => onNavigate('reminders')} style={{ background: 'none', border: 'none', color: '#059669', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Send All →</button>
             </div>
             {topPending.map((p, i) => {

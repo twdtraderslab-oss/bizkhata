@@ -54,7 +54,7 @@ export function InventoryScreen() {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white' }}>
             {hi ? 'स्टॉक प्रबंधन' : 'Inventory'}
@@ -85,10 +85,10 @@ export function InventoryScreen() {
         <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 8, marginBottom: 10 }}>
           {[
             { id: 'all', label: 'All' },
-            { id: 'fast', label: '🔥 Fast Moving' },
-            { id: 'slow', label: '🐢 Slow Moving' },
-            { id: 'dead', label: '💀 Dead Stock' },
-            { id: 'low', label: '⚠️ Low Stock' },
+            { id: 'fast', label: 'Fast Moving' },
+            { id: 'slow', label: 'Slow Moving' },
+            { id: 'dead', label: 'Dead Stock' },
+            { id: 'low', label: 'Low Stock' },
           ].map(f => (
             <button key={f.id} onClick={() => setStockView(f.id)} style={{ padding: '6px 14px', borderRadius: 99, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap', border: stockView === f.id ? 'none' : '1px solid var(--border)', background: stockView === f.id ? (f.id === 'low' || f.id === 'dead' ? 'var(--red)' : f.id === 'slow' ? 'var(--amber)' : 'var(--saffron)') : 'white', color: stockView === f.id ? 'white' : 'var(--text-secondary)' }}>
               {f.label}
@@ -219,7 +219,7 @@ function ProductDetailScreen({ product, onBack }) {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '20px 16px 24px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '20px 16px 24px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}>
             <ArrowLeft size={18} />
@@ -484,7 +484,7 @@ export function ReportsScreen() {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white' }}>
             {hi ? 'बिज़नेस रिपोर्ट' : 'Business Reports'}
@@ -508,9 +508,9 @@ export function ReportsScreen() {
         {/* Report Type Tabs */}
         <div style={{ display: 'flex', background: 'rgba(0,0,0,0.2)', borderRadius: 12, padding: 3 }}>
           {[
-            { id: 'pl', label: '📈 P&L' },
-            { id: 'gst', label: '🧾 GST' },
-            { id: 'monthly', label: '📅 Monthly' },
+            { id: 'pl', label: 'P & L' },
+            { id: 'gst', label: 'GST' },
+            { id: 'monthly', label: 'Monthly' },
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveReport(tab.id)} style={{
               flex: 1, padding: '9px 4px', borderRadius: 9, border: 'none', cursor: 'pointer', fontWeight: 700, fontSize: 12,

@@ -29,7 +29,7 @@ export default function MoreMenuScreen({ onNavigate }) {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Clean white header */}
-      <div style={{ background: 'white', padding: '20px 16px 16px', borderBottom: '1px solid #E2E8F0' }}>
+      <div style={{ background: 'var(--surface)', padding: '18px 16px 14px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 52, height: 52, borderRadius: 14, background: '#1E3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#F97316' }}>
             {currentUser?.name?.[0] || 'H'}
@@ -43,7 +43,7 @@ export default function MoreMenuScreen({ onNavigate }) {
       </div>
 
       {/* Upgrade Banner */}
-      <div onClick={() => onNavigate('upgrade')} style={{ margin: '14px 16px 0', background: 'linear-gradient(135deg, #064E3B, #065F46)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div onClick={() => onNavigate('upgrade')} style={{ margin: '14px 16px 0', background: 'var(--recovery)', borderRadius: 14, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ color: '#4ADE80', fontSize: 11, fontWeight: 700, marginBottom: 3 }}>🚀 UNLOCK RECOVERY FEATURES</div>
           <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, color: 'white' }}>₹999/year</div>

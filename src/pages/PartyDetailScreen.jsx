@@ -107,7 +107,7 @@ export default function PartyDetailScreen({ party, onBack }) {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '20px 16px 24px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '20px 16px 24px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}>
             <ArrowLeft size={18} />

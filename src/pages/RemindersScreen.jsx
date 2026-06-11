@@ -55,7 +55,7 @@ export default function RemindersScreen() {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Header — AMOUNTS not counts */}
-      <div style={{ background: 'linear-gradient(135deg, #0369A1, #0284C7)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--recovery)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 16 }}>
           {hi ? 'पेमेंट रिकवरी सेंटर' : 'Payment Recovery Center'}
         </h2>
@@ -182,7 +182,7 @@ export default function RemindersScreen() {
                               Send
                             </button>
                           )}
-                          {isSent && !isPaid && <span style={{ fontSize: 10, color: '#0369A1', fontWeight: 700 }}>✓ Sent</span>}
+                          {isSent && !isPaid && <span style={{ fontSize: 10, color: 'var(--recovery)', fontWeight: 700 }}>✓ Sent</span>}
                         </div>
                       </div>
                     </div>

@@ -68,9 +68,9 @@ export default function HisaabScreen({ onNavigate }) {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Clean header - no gradient */}
-      <div style={{ background: 'white', padding: '20px 16px 16px', borderBottom: '1px solid #E2E8F0' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 800, color: '#1E3A5F' }}>
-          📒 {hi ? 'हिसाब' : 'Hisaab'}
+      <div style={{ background: 'var(--surface)', padding: '18px 16px 14px', borderBottom: '1px solid var(--border)' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'var(--brand)' }}>
+          {hi ? 'हिसाब' : 'Hisaab'}
         </h1>
         <p style={{ color: '#94A3B8', fontSize: 13, marginTop: 3 }}>
           {hi ? 'सभी रिकॉर्ड एक जगह' : 'All your records in one place'}

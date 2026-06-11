@@ -62,7 +62,7 @@ export default function StaffScreen() {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white' }}>

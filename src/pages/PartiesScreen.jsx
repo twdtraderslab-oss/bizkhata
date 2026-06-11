@@ -45,7 +45,7 @@ export default function PartiesScreen({ onNavigate }) {
 
   return (
     <div style={{ paddingBottom: 80 }} onClick={() => setMenuPartyId(null)}>
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '24px 16px 20px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 16 }}>
           {hi ? 'पार्टी खाते' : 'Party Accounts'}
         </h2>

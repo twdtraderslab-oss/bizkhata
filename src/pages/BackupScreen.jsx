@@ -79,7 +79,7 @@ export default function BackupScreen() {
   return (
     <div style={{ paddingBottom: 80 }}>
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #0369A1, #0284C7)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--brand)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
           {hi ? 'बैकअप और रिस्टोर' : 'Backup & Restore'}
         </h2>

@@ -46,7 +46,7 @@ export default function RecoveryDashboard() {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, #059669, #047857)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--recovery)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>
           {hi ? 'पेमेंट रिकवरी सेंटर' : 'Payment Recovery Center'}
         </h2>

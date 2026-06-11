@@ -68,7 +68,7 @@ export default function AutoReminderScreen() {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
+      <div style={{ background: 'var(--recovery)', padding: '24px 16px 28px', borderRadius: '0 0 24px 24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
           <div>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 4 }}>

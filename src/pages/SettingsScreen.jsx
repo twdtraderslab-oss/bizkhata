@@ -35,9 +35,9 @@ export default function SettingsScreen({ onNavigate }) {
 
   return (
     <div style={{ paddingBottom: 80 }}>
-      <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', padding: '28px 20px 32px', borderRadius: '0 0 28px 28px' }}>
+      <div style={{ background: 'var(--brand)', padding: '28px 20px 32px', borderRadius: '0 0 28px 28px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 64, height: 64, borderRadius: 18, background: 'linear-gradient(135deg, var(--saffron), #FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, color: 'white' }}>
+          <div style={{ width: 64, height: 64, borderRadius: 18, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, color: 'white' }}>
             {currentUser?.name?.[0] || 'U'}
           </div>
           <div>
@@ -115,7 +115,7 @@ function PlanModal({ onClose }) {
           <button onClick={onClose} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 20 }}>Grow your business without limits</p>
-        <div style={{ background: 'linear-gradient(135deg, var(--indigo), var(--indigo-mid))', borderRadius: 16, padding: 20, marginBottom: 20, textAlign: 'center' }}>
+        <div style={{ background: 'var(--brand)', borderRadius: 16, padding: 20, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 42, fontWeight: 900, color: 'white' }}>₹999</div>
           <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14 }}>per year · save ₹3,000 vs monthly</div>
           <div style={{ color: '#4ADE80', fontSize: 13, fontWeight: 600, marginTop: 6 }}>🎉 Basic features FREE forever · Recovery = ₹999/yr</div>
