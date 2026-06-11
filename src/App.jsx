@@ -18,6 +18,8 @@ import AutoReminderScreen from './pages/AutoReminderScreen'
 import RecoveryDashboard from './pages/RecoveryDashboard'
 import BackupScreen from './pages/BackupScreen'
 import { AboutPage, PrivacyPage, TermsPage, HelpPage, UpgradePage } from './pages/StaticPages'
+import PWAInstall from './components/PWAInstall'
+import ProGate from './components/ProGate'
 import BottomNav from './components/BottomNav'
 // AI Agent integrated into Recovery tab
 
@@ -77,9 +79,9 @@ function AppShell() {
       case 'purchase-orders':  return <WithBack onBack={goBack}><PurchaseOrderScreen /></WithBack>
 
       // Recovery sub-screens
-      case 'reminders':        return <WithBack onBack={goBack}><RemindersScreen /></WithBack>
-      case 'auto-reminders':   return <WithBack onBack={goBack}><AutoReminderScreen /></WithBack>
-      case 'recovery-dashboard': return <WithBack onBack={goBack}><RecoveryDashboard /></WithBack>
+      case 'reminders':        return <WithBack onBack={goBack}><ProGate feature='recovery'><RemindersScreen /></ProGate></WithBack>
+      case 'auto-reminders':   return <WithBack onBack={goBack}><ProGate feature='auto-reminders'><AutoReminderScreen /></ProGate></WithBack>
+      case 'recovery-dashboard': return <WithBack onBack={goBack}><ProGate feature='recovery-dashboard'><RecoveryDashboard /></ProGate></WithBack>
 
       // More sub-screens
       case 'settings':         return <WithBack onBack={goBack}><SettingsScreen onNavigate={navigate} /></WithBack>
@@ -101,6 +103,7 @@ function AppShell() {
         {renderScreen()}
       </div>
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
+      <PWAInstall />
       {/* AI Agent moved to Recovery tab */}
     </div>
   )
