@@ -266,7 +266,7 @@ function PermissionsModal({ member, onClose }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--indigo)' }}>{member.name}</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4, background: roleConfig.bg, borderRadius: 99, padding: '4px 10px', display: 'inline-flex' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 4, background: roleConfig.bg, borderRadius: 99, padding: '4px 10px' }}>
               {roleConfig.icon}
               <span style={{ fontSize: 12, fontWeight: 700, color: roleConfig.color }}>{roleConfig.label}</span>
             </div>

@@ -1,229 +1,208 @@
 import React, { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { ArrowLeft, Phone, MessageCircle, Share2, TrendingUp, TrendingDown, Plus, FileText, Trash2, Edit2 } from 'lucide-react'
-import { printInvoice } from '../utils/pdfGenerator'
+import { ArrowLeft, Phone, TrendingUp, TrendingDown, Plus, Trash2 } from 'lucide-react'
 
-const fmtFull = n => `₹${n.toLocaleString('en-IN')}`
+const fmtFull = n => `₹${Number(n).toLocaleString('en-IN')}`
 
-// Generate party statement HTML
-function generateStatementHTML(party, transactions, business) {
-  const txns = transactions.filter(t => t.partyId === party.id).sort((a, b) => new Date(a.date) - new Date(b.date))
-  const rows = txns.map((t, i) => {
-    const isCredit = t.type === 'sale' || t.type === 'purchase'
-    const isDebit = t.type === 'receipt' || t.type === 'payment'
+function generateStatement(party, transactions, business) {
+  const txns = transactions.filter(t => t.partyId === party.id).sort((a,b) => new Date(a.date)-new Date(b.date))
+  const rows = txns.map(t => {
+    const isDebit  = t.type === 'sale' || t.type === 'purchase'
     return `<tr style="border-bottom:1px solid #f3f4f6">
-      <td style="padding:10px 14px;font-size:13px">${t.date}</td>
-      <td style="padding:10px 14px;font-size:13px">${t.note || t.type} ${t.billNo ? `<br><span style="color:#9ca3af;font-size:11px">${t.billNo}</span>` : ''}</td>
-      <td style="padding:10px 14px;text-align:right;font-size:13px;color:#16A34A;font-weight:700">${isCredit ? fmtFull(t.amount) : '-'}</td>
-      <td style="padding:10px 14px;text-align:right;font-size:13px;color:#DC2626;font-weight:700">${isDebit ? fmtFull(t.amount) : '-'}</td>
-      <td style="padding:10px 14px;text-align:right;font-size:13px;font-weight:700">${fmtFull(t.balanceAfter || 0)}</td>
+      <td style="padding:9px 12px;font-size:13px">${t.date}</td>
+      <td style="padding:9px 12px;font-size:13px">${t.type === 'sale' ? 'Invoice Raised' : t.type === 'purchase' ? 'Purchase Invoice' : t.type === 'receipt' ? 'Payment Received' : 'Payment Made'} ${t.note ? '· ' + t.note : ''}</td>
+      <td style="padding:9px 12px;text-align:right;font-size:13px;color:#DC2626;font-weight:700">${isDebit ? fmtFull(t.amount) : '—'}</td>
+      <td style="padding:9px 12px;text-align:right;font-size:13px;color:#059669;font-weight:700">${!isDebit ? fmtFull(t.amount) : '—'}</td>
+      <td style="padding:9px 12px;text-align:right;font-size:13px;font-weight:700">${fmtFull(t.balanceAfter || 0)}</td>
     </tr>`
   }).join('')
-
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
-<title>Account Statement - ${party.name}</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',Arial,sans-serif;color:#1f2937;background:white}.page{max-width:750px;margin:0 auto;padding:32px}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:20px;border-bottom:3px solid #1A1F5E}.business{font-size:24px;font-weight:800;color:#1A1F5E}.meta{text-align:right;font-size:13px;color:#6b7280}table{width:100%;border-collapse:collapse}thead tr{background:#1A1F5E;color:white}thead th{padding:11px 14px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase}.total-row{background:#f9fafb;font-weight:700}.btn{background:#FF6B1A;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;margin-right:8px}@media print{.no-print{display:none}}</style>
-</head><body><div class="page">
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>Statement - ${party.name}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Segoe UI',sans-serif;color:#0f172a}
+.page{max-width:720px;margin:0 auto;padding:32px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:18px;border-bottom:3px solid #1E3A5F}
+.btn{background:#E8520A;color:white;border:none;padding:9px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700;margin-right:8px}
+table{width:100%;border-collapse:collapse}thead tr{background:#1E3A5F;color:white}th{padding:9px 12px;text-align:left;font-size:11px;text-transform:uppercase}
+.total-row{background:#f8fafc;font-weight:800}@media print{.no-print{display:none}}</style></head>
+<body><div class="page">
 <div class="no-print" style="text-align:right;margin-bottom:20px">
-<button class="btn" onclick="window.print()">🖨️ Print / PDF</button>
-<button onclick="window.close()" style="background:#f3f4f6;border:none;padding:10px 16px;border-radius:8px;cursor:pointer">✕ Close</button>
-</div>
+<button class="btn" onclick="window.print()">Print / Save PDF</button>
+<button onclick="window.close()" style="background:#f1f5f9;border:none;padding:9px 14px;border-radius:8px;cursor:pointer">Close</button></div>
 <div class="header">
-<div>
-<div class="business">${business?.name || 'Business'}</div>
-<div style="font-size:12px;color:#6b7280;margin-top:4px">${business?.address || ''} · ${business?.phone || ''}</div>
-</div>
-<div class="meta">
-<div style="font-size:22px;font-weight:800;color:#FF6B1A">STATEMENT</div>
-<div style="margin-top:4px">As on: ${new Date().toLocaleDateString('en-IN')}</div>
-</div>
-</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
-<div style="background:#f9fafb;border-radius:10px;padding:14px;border:1px solid #e5e7eb">
-<div style="font-size:11px;color:#9ca3af;text-transform:uppercase;margin-bottom:6px">Party Details</div>
+<div><div style="font-size:22px;font-weight:800;color:#1E3A5F">${business?.name || 'Business'}</div>
+<div style="font-size:12px;color:#64748b;margin-top:3px">${business?.phone || ''} · ${business?.gstin || ''}</div></div>
+<div style="text-align:right"><div style="font-size:22px;font-weight:800;color:#E8520A">STATEMENT</div>
+<div style="font-size:12px;color:#64748b">Date: ${new Date().toLocaleDateString('en-IN')}</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+<div style="background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0">
+<div style="font-size:11px;color:#94a3b8;text-transform:uppercase;margin-bottom:5px">Party</div>
 <div style="font-size:16px;font-weight:700">${party.name}</div>
-<div style="font-size:13px;color:#6b7280">${party.city} · ${party.phone || ''}</div>
-${party.gstin ? `<div style="font-size:12px;color:#6b7280">GSTIN: ${party.gstin}</div>` : ''}
-</div>
-<div style="background:${party.balanceType === 'to_receive' ? '#DCFCE7' : '#FEE2E2'};border-radius:10px;padding:14px;border:1px solid ${party.balanceType === 'to_receive' ? '#86EFAC' : '#FCA5A5'}">
-<div style="font-size:11px;color:#6b7280;text-transform:uppercase;margin-bottom:6px">${party.balanceType === 'to_receive' ? 'Outstanding (To Receive)' : 'Payable (To Pay)'}</div>
-<div style="font-size:28px;font-weight:800;color:${party.balanceType === 'to_receive' ? '#16A34A' : '#DC2626'}">${fmtFull(party.balance)}</div>
-</div>
-</div>
-<table>
-<thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Credit</th><th style="text-align:right">Debit</th><th style="text-align:right">Balance</th></tr></thead>
-<tbody>${rows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:#9ca3af">No transactions found</td></tr>'}</tbody>
-</table>
-<div style="margin-top:24px;text-align:center;font-size:11px;color:#d1d5db">Generated by HisaabPro · ${new Date().toLocaleString('en-IN')}</div>
+<div style="font-size:12px;color:#64748b">${party.city || ''} ${party.phone ? '· ' + party.phone : ''}</div></div>
+<div style="background:${party.balanceType==='to_receive'?'#DCFCE7':'#FEE2E2'};border-radius:10px;padding:14px">
+<div style="font-size:11px;color:#64748b;text-transform:uppercase;margin-bottom:5px">${party.balanceType==='to_receive'?'Outstanding (To Receive)':'Payable (To Pay)'}</div>
+<div style="font-size:28px;font-weight:900;color:${party.balanceType==='to_receive'?'#059669':'#DC2626'}">${fmtFull(party.balance)}</div></div></div>
+<table><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Debit</th><th style="text-align:right">Credit</th><th style="text-align:right">Balance</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="5" style="text-align:center;padding:16px;color:#94a3b8">No transactions</td></tr>'}</tbody></table>
+<div style="text-align:center;margin-top:20px;font-size:11px;color:#cbd5e1">Generated by HisaabPro · ${new Date().toLocaleString('en-IN')}</div>
 </div></body></html>`
+  const win = window.open('', '_blank', 'width=900,height=700')
+  win.document.write(html)
+  win.document.close()
 }
 
 export default function PartyDetailScreen({ party, onBack }) {
-  const { transactions, addTransaction, deleteTransaction, language, currentUser, business, parties, editParty } = useApp()
+  const { transactions, addTransaction, deleteTransaction, language, business, parties } = useApp()
   const hi = language === 'hi'
   const [showAddModal, setShowAddModal] = useState(false)
-  const [editTxn, setEditTxn] = useState(null)
 
-  // Get latest party data (balance may have changed)
   const latestParty = parties.find(p => p.id === party.id) || party
 
   const partyTxns = transactions
     .filter(t => t.partyId === party.id)
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 
+  // Risk score
+  const payments = partyTxns.filter(t => t.type === 'receipt' || t.type === 'payment')
+  const lastPayment = payments[0]
+  const daysSincePmt = lastPayment
+    ? Math.floor((new Date() - new Date(lastPayment.date)) / 86400000) : null
+  const riskLevel = latestParty.balance > 100000 || (daysSincePmt !== null && daysSincePmt > 30)
+    ? 'High' : latestParty.balance > 30000 || (daysSincePmt !== null && daysSincePmt > 14)
+    ? 'Medium' : 'Low'
+  const riskColor = riskLevel === 'High' ? '#DC2626' : riskLevel === 'Medium' ? '#B45309' : '#059669'
+  const riskBg    = riskLevel === 'High' ? '#FEF2F2' : riskLevel === 'Medium' ? '#FEF3C7' : '#F0FDF4'
+
+  const typeLabels = {
+    sale:     'Invoice Raised',
+    purchase: 'Purchase Invoice',
+    receipt:  'Payment Received',
+    payment:  'Payment Made',
+  }
+
   const handleWhatsApp = () => {
     const msg = encodeURIComponent(
-      `Dear ${latestParty.name},\n\nYour current balance with *${business?.name || currentUser?.name}* is *${fmtFull(latestParty.balance)}* (${latestParty.balanceType === 'to_receive' ? 'to pay us' : 'we owe you'}).\n\nKindly arrange payment at your earliest convenience.\n\nThank you 🙏\n${business?.name}`
+      `Dear ${latestParty.name},\n\nYour current balance with *${business?.name}* is *${fmtFull(latestParty.balance)}* (${latestParty.balanceType === 'to_receive' ? 'outstanding' : 'we owe you'}).\n\nKindly arrange payment.\n\nThank you 🙏\n${business?.name}`
     )
     window.open(`https://wa.me/91${latestParty.phone}?text=${msg}`, '_blank')
   }
 
-  const handleStatement = () => {
-    const html = generateStatementHTML(latestParty, transactions, business)
-    const win = window.open('', '_blank', 'width=900,height=700')
-    win.document.write(html)
-    win.document.close()
-  }
-
-  const handleShare = async () => {
-    const text = `*Account Statement - ${latestParty.name}*\n\nBusiness: ${business?.name}\nDate: ${new Date().toLocaleDateString('en-IN')}\n\nOutstanding Balance: *${fmtFull(latestParty.balance)}* (${latestParty.balanceType === 'to_receive' ? 'To Receive' : 'To Pay'})\n\nTotal Transactions: ${partyTxns.length}\n\n_Generated by HisaabPro_`
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: `Statement - ${latestParty.name}`, text })
-      } catch (e) {}
-    } else {
-      // Fallback — copy to clipboard
-      navigator.clipboard?.writeText(text)
-      alert('Statement copied to clipboard! Paste it anywhere.')
-    }
-  }
-
-  const handleDeleteTxn = (txnId) => {
-    if (window.confirm('Delete this transaction?')) deleteTransaction(txnId)
-  }
-
-  const typeLabels = { sale: 'Invoice Raised', purchase: 'Purchase Invoice', receipt: 'Payment Received ✓', payment: 'Payment Made ✓' }
-
   return (
-    <div style={{ paddingBottom: 80 }}>
+    <div style={{ paddingBottom: 80, background: 'var(--bg)', minHeight: '100vh' }}>
       {/* Header */}
-      <div style={{ background: 'var(--brand)', padding: '20px 16px 24px', borderRadius: '0 0 24px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-          <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white' }}>
+      <div style={{ background: 'var(--brand)', padding: '18px 16px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
+          <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'white', flexShrink: 0 }}>
             <ArrowLeft size={18} />
           </button>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'white', marginBottom: 2 }}>{latestParty.name}</h2>
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{latestParty.city} {latestParty.phone ? `· ${latestParty.phone}` : ''}</p>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 700, color: 'white' }}>{latestParty.name}</h2>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, marginTop: 1 }}>{latestParty.city}{latestParty.phone ? ` · ${latestParty.phone}` : ''}</p>
           </div>
           {latestParty.phone && (
-            <a href={`tel:+91${latestParty.phone}`} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', textDecoration: 'none' }}>
+            <a href={`tel:+91${latestParty.phone}`} style={{ background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: 10, width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', textDecoration: 'none', flexShrink: 0 }}>
               <Phone size={16} />
             </a>
           )}
         </div>
 
         {/* Balance */}
-        <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 18, padding: '18px 20px', border: '1px solid rgba(255,255,255,0.2)', textAlign: 'center', marginBottom: 14 }}>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, marginBottom: 8 }}>
+        <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: '16px', border: '1px solid rgba(255,255,255,0.15)', textAlign: 'center', marginBottom: 12 }}>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginBottom: 6 }}>
             {latestParty.balanceType === 'to_receive' ? (hi ? 'आपको मिलना है' : 'You will receive') : (hi ? 'आपको देना है' : 'You will pay')}
           </p>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 36, fontWeight: 800, color: latestParty.balanceType === 'to_receive' ? '#4ADE80' : '#F87171' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 38, fontWeight: 900, color: latestParty.balanceType === 'to_receive' ? '#4ADE80' : '#F87171' }}>
             {fmtFull(latestParty.balance)}
           </div>
-          {latestParty.balance === 0 && <div style={{ color: '#4ADE80', fontSize: 14, fontWeight: 600, marginTop: 4 }}>✓ Settled</div>}
+          {latestParty.balance === 0 && <div style={{ color: '#4ADE80', fontSize: 13, marginTop: 4 }}>✓ Settled</div>}
         </div>
 
-        {/* Party Intelligence */}
-        {partyTxns.length > 0 && (() => {
-          const payments = partyTxns.filter(t => t.type === 'receipt' || t.type === 'payment')
-          const lastPayment = payments[0]
-          const daysSincePayment = lastPayment ? Math.floor((new Date() - new Date(lastPayment.date)) / (1000*60*60*24)) : null
-          const avgBalance = partyTxns.length > 0 ? Math.round(partyTxns.reduce((s,t) => s + (t.balanceAfter||0), 0) / partyTxns.length) : 0
-          const riskScore = latestParty.balance > 100000 ? 'High' : latestParty.balance > 30000 ? 'Medium' : 'Low'
-          const riskColor = riskScore === 'High' ? 'var(--red)' : riskScore === 'Medium' ? 'var(--amber)' : 'var(--green)'
-          const riskBg = riskScore === 'High' ? 'var(--red-light)' : riskScore === 'Medium' ? 'var(--amber-light)' : 'var(--green-light)'
-          return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 10 }}>
-              <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9, textTransform: 'uppercase', marginBottom: 4 }}>Last Payment</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>{daysSincePayment !== null ? `${daysSincePayment}d ago` : 'None'}</div>
-              </div>
-              <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9, textTransform: 'uppercase', marginBottom: 4 }}>Transactions</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>{partyTxns.length}</div>
-              </div>
-              <div style={{ background: riskBg, borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: `1px solid ${riskColor}40` }}>
-                <div style={{ color: riskColor, fontSize: 9, textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Risk Score</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: riskColor, fontSize: 14 }}>{riskScore}</div>
-              </div>
+        {/* Intelligence row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
+          <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>
+              {daysSincePmt !== null ? `${daysSincePmt}d` : 'None'}
             </div>
-          )
-        })()}
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 9, textTransform: 'uppercase', marginTop: 2 }}>Last Payment</div>
+          </div>
+          <div style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 10, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.15)' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>{partyTxns.length}</div>
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 9, textTransform: 'uppercase', marginTop: 2 }}>Transactions</div>
+          </div>
+          <div style={{ background: riskBg, borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: riskColor, fontSize: 14 }}>{riskLevel}</div>
+            <div style={{ color: riskColor, fontSize: 9, textTransform: 'uppercase', marginTop: 2, opacity: 0.8 }}>Risk Score</div>
+          </div>
+        </div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-          {[
-            { label: hi ? 'WhatsApp' : 'WhatsApp', bg: '#25D366', icon: '📱', action: handleWhatsApp, show: !!latestParty.phone },
-            { label: hi ? 'स्टेटमेंट' : 'Statement', bg: 'rgba(255,255,255,0.15)', icon: '📄', action: handleStatement, show: true },
-            { label: hi ? 'शेयर' : 'Share', bg: 'rgba(255,255,255,0.15)', icon: '↗️', action: handleShare, show: true },
-          ].filter(b => b.show).map((btn, i) => (
-            <button key={i} onClick={btn.action} style={{ padding: '10px 6px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', background: btn.bg, color: 'white', fontWeight: 700, fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              <span>{btn.icon}</span> {btn.label}
+        {/* Action buttons */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8 }}>
+          {latestParty.phone && (
+            <button onClick={handleWhatsApp} style={{ padding: '10px 6px', borderRadius: 10, border: 'none', cursor: 'pointer', background: '#25D366', color: 'white', fontWeight: 600, fontSize: 12 }}>
+              WhatsApp
             </button>
-          ))}
+          )}
+          <button onClick={() => generateStatement(latestParty, transactions, business)} style={{ padding: '10px 6px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 600, fontSize: 12 }}>
+            Statement
+          </button>
+          <button onClick={async () => {
+            const text = `Account Statement\n${latestParty.name}\nBalance: ${fmtFull(latestParty.balance)}\nGenerated by HisaabPro`
+            if (navigator.share) { try { await navigator.share({ title: 'Statement', text }) } catch(e) {} }
+            else { navigator.clipboard?.writeText(text); alert('Copied!') }
+          }} style={{ padding: '10px 6px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.25)', cursor: 'pointer', background: 'rgba(255,255,255,0.1)', color: 'white', fontWeight: 600, fontSize: 12 }}>
+            Share
+          </button>
         </div>
       </div>
 
-      {/* Transactions */}
+      {/* Transaction History */}
       <div style={{ padding: '16px 16px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-            {hi ? 'लेन-देन इतिहास' : 'Transaction History'} ({partyTxns.length})
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 700 }}>
+            Transaction History ({partyTxns.length})
           </h3>
         </div>
 
         {partyTxns.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>📋</div>
-            <p style={{ fontWeight: 600 }}>{hi ? 'कोई लेन-देन नहीं' : 'No transactions yet'}</p>
+          <div style={{ textAlign: 'center', padding: '50px 20px', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>📋</div>
+            <p style={{ fontWeight: 600 }}>No transactions yet</p>
             <p style={{ fontSize: 13, marginTop: 4 }}>Tap + to add first entry</p>
           </div>
         ) : (
-          <div className="card" style={{ overflow: 'hidden' }}>
+          <div style={{ background: 'var(--surface)', borderRadius: 'var(--r-lg)', border: '1px solid var(--border)', overflow: 'hidden' }}>
             {partyTxns.map((t, i) => {
-              // Invoice Raised / Purchase = DEBIT = RED with MINUS
-              // Payment Received / Payment Made = CREDIT = GREEN with PLUS
+              // Invoice Raised = DEBIT = RED minus
+              // Payment Received = CREDIT = GREEN plus
               const isDebit  = t.type === 'sale' || t.type === 'purchase'
-              const isCredit = t.type === 'receipt' || t.type === 'payment'
               const txnColor = isDebit ? 'var(--red)' : 'var(--green)'
               const txnBg    = isDebit ? 'var(--red-light)' : 'var(--green-light)'
               const txnSign  = isDebit ? '−' : '+'
+
               return (
                 <div key={t.id} style={{ padding: '12px 14px', borderBottom: i < partyTxns.length - 1 ? '1px solid var(--border-light)' : 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: txnBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {isDebit ? <TrendingUp size={15} color="var(--green)" /> : <TrendingDown size={15} color="var(--red)" />}
+                  <div style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, background: txnBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {isDebit
+                      ? <TrendingUp size={14} color={txnColor} />
+                      : <TrendingDown size={14} color={txnColor} />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div style={{ fontWeight: 600, fontSize: 13 }}>{typeLabels[t.type] || t.type}</div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: isIncoming ? 'var(--green)' : 'var(--red)', flexShrink: 0, marginLeft: 8 }}>
-                        {isIncoming ? '+' : '-'}{fmtFull(t.amount)}
+                      <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 14, color: txnColor, flexShrink: 0, marginLeft: 8 }}>
+                        {txnSign}{fmtFull(t.amount)}
                       </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.note || '—'} {t.billNo ? `· ${t.billNo}` : ''}</span>
+                      <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{t.note || '—'}{t.billNo ? ` · ${t.billNo}` : ''}</span>
                       <span style={{ fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>{t.date}</span>
                     </div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 1 }}>
-                      Balance: <strong>{fmtFull(t.balanceAfter || 0)}</strong>
+                      Balance: <strong style={{ color: 'var(--text-primary)' }}>{fmtFull(t.balanceAfter || 0)}</strong>
                     </div>
                   </div>
-                  {/* Delete transaction */}
-                  <button onClick={() => handleDeleteTxn(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', borderRadius: 6, color: 'var(--text-muted)', flexShrink: 0 }}
-                    onMouseEnter={e => e.currentTarget.style.color = 'var(--red)'}
-                    onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}>
-                    <Trash2 size={14} />
+                  <button onClick={() => { if(window.confirm('Delete?')) deleteTransaction(t.id) }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-muted)', flexShrink: 0 }}
+                    onMouseEnter={e => e.currentTarget.style.color='var(--red)'}
+                    onMouseLeave={e => e.currentTarget.style.color='var(--text-muted)'}>
+                    <Trash2 size={13} />
                   </button>
                 </div>
               )
@@ -233,8 +212,8 @@ export default function PartyDetailScreen({ party, onBack }) {
       </div>
 
       {/* FAB */}
-      <button onClick={() => setShowAddModal(true)} style={{ position: 'fixed', bottom: 88, right: 20, width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, var(--saffron), #FF8C42)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-saffron)', zIndex: 50 }}>
-        <Plus size={24} />
+      <button onClick={() => setShowAddModal(true)} style={{ position: 'fixed', bottom: 88, right: 20, width: 52, height: 52, borderRadius: '50%', background: 'var(--accent)', border: 'none', cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 16px rgba(232,82,10,0.35)', zIndex: 50 }}>
+        <Plus size={22} />
       </button>
 
       {showAddModal && <AddTransactionModal party={latestParty} onClose={() => setShowAddModal(false)} />}
@@ -246,63 +225,65 @@ function AddTransactionModal({ party, onClose }) {
   const { addTransaction, language } = useApp()
   const hi = language === 'hi'
   const isCustomer = party.type === 'customer' || party.type === 'both'
-  const [form, setForm] = useState({ type: isCustomer ? 'sale' : 'purchase', amount: '', note: '', billNo: '', date: new Date().toISOString().split('T')[0] })
+  const [form, setForm] = useState({
+    type: isCustomer ? 'sale' : 'purchase',
+    amount: '', note: '', billNo: '',
+    date: new Date().toISOString().split('T')[0]
+  })
   const [error, setError] = useState('')
 
   const typeOptions = isCustomer
-    ? [{ v: 'sale', l: 'Sale (Credit)', lhi: 'बिक्री (उधार)' }, { v: 'receipt', l: 'Payment Received', lhi: 'भुगतान मिला' }]
-    : [{ v: 'purchase', l: 'Purchase (Credit)', lhi: 'खरीद (उधार)' }, { v: 'payment', l: 'Payment Made', lhi: 'भुगतान किया' }]
+    ? [{ v: 'sale', l: 'Invoice Raised' }, { v: 'receipt', l: 'Payment Received' }]
+    : [{ v: 'purchase', l: 'Purchase Invoice' }, { v: 'payment', l: 'Payment Made' }]
 
   const handleSave = () => {
-    if (!form.amount || Number(form.amount) <= 0) { setError('Please enter a valid amount'); return }
-    const currentBalance = party.balance
-    let newBalance = currentBalance
-    if (form.type === 'sale') newBalance += Number(form.amount)
-    if (form.type === 'receipt') newBalance = Math.max(0, currentBalance - Number(form.amount))
-    if (form.type === 'purchase') newBalance += Number(form.amount)
-    if (form.type === 'payment') newBalance = Math.max(0, currentBalance - Number(form.amount))
-    addTransaction({ partyId: party.id, type: form.type, amount: Number(form.amount), balanceAfter: newBalance, note: form.note, billNo: form.billNo, date: form.date })
+    if (!form.amount || Number(form.amount) <= 0) { setError('Enter valid amount'); return }
+    const bal = party.balance
+    let newBal = bal
+    if (form.type === 'sale' || form.type === 'purchase') newBal += Number(form.amount)
+    else newBal = Math.max(0, bal - Number(form.amount))
+    addTransaction({ partyId: party.id, type: form.type, amount: Number(form.amount), balanceAfter: newBal, note: form.note, billNo: form.billNo, date: form.date })
     onClose()
   }
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(4px)' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--indigo)' }}>{hi ? 'एंट्री जोड़ें' : 'Add Entry'}</h3>
-          <button onClick={onClose} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
+      <div className="card slide-up" style={{ width: '100%', borderRadius: '20px 20px 0 0', padding: '22px 18px 36px', maxHeight: '85vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, color: 'var(--brand)' }}>Add Entry</h3>
+          <button onClick={onClose} style={{ background: 'var(--bg)', border: 'none', borderRadius: 8, width: 30, height: 30, cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>✕</button>
         </div>
-        <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>{party.name}</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 10 }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 18 }}>{party.name}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             {typeOptions.map(o => (
-              <button key={o.v} onClick={() => setForm(f => ({ ...f, type: o.v }))} style={{ flex: 1, padding: '12px 8px', borderRadius: 14, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: form.type === o.v ? 'none' : '1.5px solid var(--border)', background: form.type === o.v ? (o.v === 'sale' || o.v === 'purchase') ? 'linear-gradient(135deg, var(--saffron), #FF8C42)' : 'var(--green)' : 'white', color: form.type === o.v ? 'white' : 'var(--text-secondary)' }}>
-                {hi ? o.lhi : o.l}
+              <button key={o.v} onClick={() => setForm(f => ({ ...f, type: o.v }))} style={{ flex: 1, padding: '11px 6px', borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: form.type === o.v ? 'none' : '1.5px solid var(--border)', background: form.type === o.v ? (o.v === 'sale' || o.v === 'purchase' ? 'var(--red)' : 'var(--green)') : 'var(--surface)', color: form.type === o.v ? 'white' : 'var(--text-secondary)' }}>
+                {o.l}
               </button>
             ))}
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{hi ? 'राशि *' : 'Amount *'}</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 5 }}>Amount *</label>
             <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text-secondary)', fontSize: 18 }}>₹</span>
-              <input className="input-field" style={{ paddingLeft: 32, fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700 }} placeholder="0" type="number" value={form.amount} onChange={e => { setForm(f => ({ ...f, amount: e.target.value })); setError('') }} autoFocus />
+              <span style={{ position: 'absolute', left: 13, top: '50%', transform: 'translateY(-50%)', fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text-secondary)', fontSize: 16 }}>₹</span>
+              <input className="input-field" style={{ paddingLeft: 28, fontSize: 22, fontFamily: 'var(--font-display)', fontWeight: 700 }} placeholder="0" type="number" value={form.amount} onChange={e => { setForm(f => ({ ...f, amount: e.target.value })); setError('') }} autoFocus />
             </div>
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{hi ? 'तारीख' : 'Date'}</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 5 }}>Date</label>
             <input className="input-field" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{hi ? 'विवरण' : 'Note (optional)'}</label>
-            <input className="input-field" placeholder={hi ? 'जैसे: बासमती चावल 50 बैग' : 'e.g. Basmati rice 50 bags'} value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} />
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 5 }}>Note (optional)</label>
+            <input className="input-field" placeholder="e.g. Basmati rice 50 bags" value={form.note} onChange={e => setForm(f => ({ ...f, note: e.target.value }))} />
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 6 }}>{hi ? 'बिल नंबर' : 'Bill No. (optional)'}</label>
+            <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', display: 'block', marginBottom: 5 }}>Bill No. (optional)</label>
             <input className="input-field" placeholder="INV-2026-001" value={form.billNo} onChange={e => setForm(f => ({ ...f, billNo: e.target.value }))} />
           </div>
           {error && <p style={{ color: 'var(--red)', fontSize: 13 }}>{error}</p>}
-          <button className="btn-primary" style={{ width: '100%' }} onClick={handleSave}>{hi ? 'एंट्री सेव करें ✓' : 'Save Entry ✓'}</button>
+          <button className="btn-primary" style={{ width: '100%' }} onClick={handleSave}>Save Entry</button>
         </div>
       </div>
     </div>

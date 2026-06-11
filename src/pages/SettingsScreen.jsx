@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { resetPassword } from '../utils/supabase.js'
 import { Building2, Globe, Shield, Bell, HelpCircle, LogOut, ChevronRight, Crown, Users } from 'lucide-react'
 
 export default function SettingsScreen({ onNavigate }) {
@@ -300,7 +301,6 @@ function PasswordResetModal({ onClose }) {
     setLoading(true)
     setError('')
     try {
-      const { resetPassword } = await import('../utils/supabase.js')
       await resetPassword(currentUser?.email || '', window.location.origin)
       setSent(true)
     } catch (e) {
