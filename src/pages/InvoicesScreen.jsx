@@ -130,6 +130,44 @@ export default function InvoicesScreen({ onNavigate }) {
       }}>
         <Plus size={24} />
       </button>
+
+      {/* ── Edit Invoice Modal ─────────────────────────── */}
+      {showEditStatus && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 300, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(4px)' }}
+          onClick={e => e.target === e.currentTarget && setShowEditStatus(false)}>
+          <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', maxHeight: '85vh', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--indigo)' }}>✏️ Edit Invoice</h3>
+              <button onClick={() => setShowEditStatus(false)} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>{invoice.invoiceNo} · {party?.name}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Update Payment Status</label>
+              {[
+                { status: 'unpaid',  label: '❌ Unpaid',         color: 'var(--red)',   bg: 'var(--red-light)' },
+                { status: 'partial', label: '⏳ Partial Payment', color: 'var(--amber)', bg: 'var(--amber-light)' },
+                { status: 'paid',    label: '✅ Fully Paid',      color: 'var(--green)', bg: 'var(--green-light)' },
+              ].map(opt => (
+                <button key={opt.status}
+                  onClick={() => {
+                    updateInvoiceStatus(invoice.id, opt.status)
+                    if (opt.status === 'paid') addTransaction({ partyId: invoice.partyId, type: 'receipt', amount: invoice.totalAmount, balanceAfter: 0, note: 'Payment for ' + invoice.invoiceNo, billNo: invoice.invoiceNo, date: new Date().toISOString().split('T')[0] })
+                    setShowEditStatus(false)
+                    onBack()
+                  }}
+                  style={{ padding: '14px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: invoice.status === opt.status ? '2px solid ' + opt.color : '1.5px solid var(--border)', background: invoice.status === opt.status ? opt.bg : 'white', color: opt.color, fontWeight: 700, fontSize: 15 }}>
+                  {opt.label}
+                  {invoice.status === opt.status && <span style={{ fontSize: 11, background: opt.color, color: 'white', padding: '2px 10px', borderRadius: 99 }}>Current</span>}
+                </button>
+              ))}
+              <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
+              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Update Due Date</label>
+              <input className="input-field" type="date" defaultValue={invoice.dueDate} onChange={e => editInvoice && editInvoice(invoice.id, { dueDate: e.target.value })} />
+              <button className="btn-primary" style={{ width: '100%', marginTop: 4 }} onClick={() => setShowEditStatus(false)}>Done ✓</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -358,64 +396,6 @@ function CreateInvoiceScreen({ onBack, onDone }) {
         </button>
       </div>
 
-      {/* ── Edit Invoice Modal ─────────────────────────────────── */}
-      {showEditStatus && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 300, display: 'flex', alignItems: 'flex-end', backdropFilter: 'blur(4px)' }}
-          onClick={e => e.target === e.currentTarget && setShowEditStatus(false)}>
-          <div className="card slide-up" style={{ width: '100%', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', maxHeight: '85vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: 'var(--indigo)' }}>✏️ Edit Invoice</h3>
-              <button onClick={() => setShowEditStatus(false)} style={{ background: 'var(--bg)', border: 'none', borderRadius: 10, width: 32, height: 32, cursor: 'pointer', fontSize: 18 }}>✕</button>
-            </div>
-            <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>{invoice.invoiceNo} · {party?.name}</p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Update Payment Status
-              </label>
-              {[
-                { status: 'unpaid',  label: '❌ Unpaid',          color: 'var(--red)',   bg: 'var(--red-light)' },
-                { status: 'partial', label: '⏳ Partial Payment',  color: 'var(--amber)', bg: 'var(--amber-light)' },
-                { status: 'paid',    label: '✅ Fully Paid',       color: 'var(--green)', bg: 'var(--green-light)' },
-              ].map(opt => (
-                <button key={opt.status}
-                  onClick={() => {
-                    updateInvoiceStatus(invoice.id, opt.status)
-                    if (opt.status === 'paid') {
-                      addTransaction({ partyId: invoice.partyId, type: 'receipt', amount: invoice.totalAmount, balanceAfter: 0, note: 'Payment for ' + invoice.invoiceNo, billNo: invoice.invoiceNo, date: new Date().toISOString().split('T')[0] })
-                    }
-                    setShowEditStatus(false)
-                    onBack()
-                  }}
-                  style={{
-                    padding: '14px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    border: invoice.status === opt.status ? '2px solid ' + opt.color : '1.5px solid var(--border)',
-                    background: invoice.status === opt.status ? opt.bg : 'white',
-                    color: opt.color, fontWeight: 700, fontSize: 15,
-                  }}>
-                  {opt.label}
-                  {invoice.status === opt.status && (
-                    <span style={{ fontSize: 11, background: opt.color, color: 'white', padding: '2px 10px', borderRadius: 99 }}>Current</span>
-                  )}
-                </button>
-              ))}
-
-              <div style={{ height: 1, background: 'var(--border)', margin: '4px 0' }} />
-
-              <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Update Due Date
-              </label>
-              <input className="input-field" type="date" defaultValue={invoice.dueDate}
-                onChange={e => editInvoice && editInvoice(invoice.id, { dueDate: e.target.value })} />
-
-              <button className="btn-primary" style={{ width: '100%', marginTop: 4 }} onClick={() => setShowEditStatus(false)}>
-                Done ✓
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -542,6 +522,43 @@ function InvoiceDetailScreen({ invoice, onBack }) {
             </div>
           </div>
         </div>
+
+
+      {showEditStatus && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.55)', zIndex:300, display:'flex', alignItems:'flex-end', backdropFilter:'blur(4px)' }}
+          onClick={e => e.target === e.currentTarget && setShowEditStatus(false)}>
+          <div className="card slide-up" style={{ width:'100%', borderRadius:'24px 24px 0 0', padding:'24px 20px 40px', maxHeight:'85vh', overflowY:'auto' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
+              <h3 style={{ fontFamily:'var(--font-display)', fontSize:20, fontWeight:700, color:'var(--indigo)' }}>Edit Invoice</h3>
+              <button onClick={() => setShowEditStatus(false)} style={{ background:'var(--bg)', border:'none', borderRadius:10, width:32, height:32, cursor:'pointer', fontSize:18 }}>x</button>
+            </div>
+            <p style={{ color:'var(--text-muted)', fontSize:13, marginBottom:20 }}>{invoice.invoiceNo}</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+              <label style={{ fontSize:11, fontWeight:700, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.5px' }}>Update Status</label>
+              {[
+                { status:'unpaid',  label:'Unpaid',         color:'var(--red)',   bg:'var(--red-light)' },
+                { status:'partial', label:'Partial Payment', color:'var(--amber)', bg:'var(--amber-light)' },
+                { status:'paid',    label:'Fully Paid',      color:'var(--green)', bg:'var(--green-light)' },
+              ].map(opt => (
+                <button key={opt.status}
+                  onClick={() => {
+                    updateInvoiceStatus(invoice.id, opt.status)
+                    if (opt.status === 'paid') addTransaction({ partyId:invoice.partyId, type:'receipt', amount:invoice.totalAmount, balanceAfter:0, note:'Payment: '+invoice.invoiceNo, billNo:invoice.invoiceNo, date:new Date().toISOString().split('T')[0] })
+                    setShowEditStatus(false); onBack()
+                  }}
+                  style={{ padding:'14px 16px', borderRadius:12, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', border: invoice.status===opt.status ? '2px solid '+opt.color : '1.5px solid var(--border)', background: invoice.status===opt.status ? opt.bg : 'white', color:opt.color, fontWeight:700, fontSize:15 }}>
+                  {opt.label === 'Unpaid' ? 'Unpaid' : opt.label === 'Partial Payment' ? 'Partial Payment' : 'Fully Paid'}
+                  {invoice.status===opt.status && <span style={{ fontSize:11, background:opt.color, color:'white', padding:'2px 10px', borderRadius:99 }}>Current</span>}
+                </button>
+              ))}
+              <div style={{ height:1, background:'var(--border)', margin:'4px 0' }} />
+              <label style={{ fontSize:11, fontWeight:700, color:'var(--text-secondary)', textTransform:'uppercase', letterSpacing:'0.5px' }}>Update Due Date</label>
+              <input className="input-field" type="date" defaultValue={invoice.dueDate} onChange={e => editInvoice && editInvoice(invoice.id, { dueDate: e.target.value })} />
+              <button className="btn-primary" style={{ width:'100%', marginTop:4 }} onClick={() => setShowEditStatus(false)}>Done</button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   )
