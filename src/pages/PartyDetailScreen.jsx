@@ -134,6 +134,33 @@ export default function PartyDetailScreen({ party, onBack }) {
           {latestParty.balance === 0 && <div style={{ color: '#4ADE80', fontSize: 14, fontWeight: 600, marginTop: 4 }}>✓ Settled</div>}
         </div>
 
+        {/* Party Intelligence */}
+        {partyTxns.length > 0 && (() => {
+          const payments = partyTxns.filter(t => t.type === 'receipt' || t.type === 'payment')
+          const lastPayment = payments[0]
+          const daysSincePayment = lastPayment ? Math.floor((new Date() - new Date(lastPayment.date)) / (1000*60*60*24)) : null
+          const avgBalance = partyTxns.length > 0 ? Math.round(partyTxns.reduce((s,t) => s + (t.balanceAfter||0), 0) / partyTxns.length) : 0
+          const riskScore = latestParty.balance > 100000 ? 'High' : latestParty.balance > 30000 ? 'Medium' : 'Low'
+          const riskColor = riskScore === 'High' ? 'var(--red)' : riskScore === 'Medium' ? 'var(--amber)' : 'var(--green)'
+          const riskBg = riskScore === 'High' ? 'var(--red-light)' : riskScore === 'Medium' ? 'var(--amber-light)' : 'var(--green-light)'
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 10 }}>
+              <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9, textTransform: 'uppercase', marginBottom: 4 }}>Last Payment</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>{daysSincePayment !== null ? `${daysSincePayment}d ago` : 'None'}</div>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)' }}>
+                <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 9, textTransform: 'uppercase', marginBottom: 4 }}>Transactions</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: 'white', fontSize: 14 }}>{partyTxns.length}</div>
+              </div>
+              <div style={{ background: riskBg, borderRadius: 12, padding: '10px 8px', textAlign: 'center', border: `1px solid ${riskColor}40` }}>
+                <div style={{ color: riskColor, fontSize: 9, textTransform: 'uppercase', marginBottom: 4, opacity: 0.8 }}>Risk Score</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, color: riskColor, fontSize: 14 }}>{riskScore}</div>
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Action Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
           {[
